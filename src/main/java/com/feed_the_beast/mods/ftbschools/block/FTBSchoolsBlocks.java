@@ -17,6 +17,7 @@ public class FTBSchoolsBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, FTBSchools.MOD_ID);
 
     public static final RegistryObject<SpawnMarkerBlock> SPAWN_MARKER = simpleBlock("spawn_marker", SpawnMarkerBlock::new);
+    public static final RegistryObject<SchoolTypeMarkerBlock> SCHOOL_TYPE_MARKER = simpleBlock("school_type_marker", SchoolTypeMarkerBlock::new);
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block, Function<RegistryObject<T>, Supplier<? extends Item>> item) {
         RegistryObject<T> register = BLOCKS.register(name, block);

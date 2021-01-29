@@ -1,0 +1,6 @@
+{
+   "parent": "minecraft:block/cube_all",
+   "textures": {
+       "all": "ftbschools:block/marker_day"
+   }
+}

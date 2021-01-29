@@ -3,7 +3,7 @@ package com.feed_the_beast.mods.ftbschools;
 import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsBlocks;
 import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsItems;
 import com.feed_the_beast.mods.ftbschools.world.SchoolChunkGenerator;
-import com.feed_the_beast.mods.ftbschools.world.StructureManager;
+import com.feed_the_beast.mods.ftbschools.world.SchoolManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,7 +29,7 @@ public class FTBSchools {
         FTBSchoolsItems.ITEMS.register(modBus);
         FTBSchoolsBlocks.BLOCKS.register(modBus);
 
-        modBus.addListener((FMLCommonSetupEvent event) -> StructureManager.init());
+        modBus.addListener((FMLCommonSetupEvent event) -> SchoolManager.init());
     }
 
     public static ResourceLocation id(String path) {
