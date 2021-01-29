@@ -4,9 +4,14 @@ import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsBlocks;
 import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsItems;
 import com.feed_the_beast.mods.ftbschools.world.SchoolChunkGenerator;
 import com.feed_the_beast.mods.ftbschools.world.SchoolManager;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -30,6 +35,25 @@ public class FTBSchools {
         FTBSchoolsBlocks.BLOCKS.register(modBus);
 
         modBus.addListener((FMLCommonSetupEvent event) -> SchoolManager.init());
+
+        forgeBus.addListener((RegisterCommandsEvent event) -> {
+            event.getDispatcher().register(
+                    Commands.literal("enter_school")
+                            .then(Commands.argument("school", StringArgumentType.word())
+                                    .then(Commands.argument("force_reset", BoolArgumentType.bool())
+                                            .executes((ctx) -> {
+                                                SchoolManager.enterSchool(ctx.getSource().getPlayerOrException(),
+                                                        ctx.getArgument("school", String.class),
+                                                        ctx.getArgument("force_reset", Boolean.class));
+                                                return Command.SINGLE_SUCCESS;
+                                            }))
+                                    .executes((ctx) -> {
+                                        SchoolManager.enterSchool(ctx.getSource().getPlayerOrException(),
+                                                ctx.getArgument("school", String.class));
+                                        return Command.SINGLE_SUCCESS;
+                                    })
+                            ));
+        });
     }
 
     public static ResourceLocation id(String path) {

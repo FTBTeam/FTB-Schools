@@ -4,16 +4,23 @@ import com.feed_the_beast.mods.ftbschools.FTBSchools;
 import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsBlocks;
 import com.feed_the_beast.mods.ftbschools.block.SchoolTypeMarkerBlock;
 import com.feed_the_beast.mods.ftbschools.block.SpawnMarkerBlock;
+import com.feed_the_beast.mods.ftbschools.util.StructureExcluded;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraftforge.fml.RegistryObject;
 
 import static com.feed_the_beast.mods.ftbschools.world.SchoolManager.SchoolType;
 import static com.feed_the_beast.mods.ftbschools.world.SchoolManager.schools;
 
 public class SchoolStructure {
+
+    private final StructureTemplate template;
 
     public final String name;
 
@@ -21,7 +28,8 @@ public class SchoolStructure {
     public final Direction spawnFacing;
     public final SchoolType type;
 
-    private SchoolStructure(String name, BlockPos spawn, Direction spawnFacing, SchoolType type) {
+    private SchoolStructure(StructureTemplate template, String name, BlockPos spawn, Direction spawnFacing, SchoolType type) {
+        this.template = template;
         this.name = name;
         this.spawn = spawn;
         this.spawnFacing = spawnFacing;
@@ -54,6 +62,16 @@ public class SchoolStructure {
             break;
         }
 
-        return new SchoolStructure(name, spawn, spawnFacing, type);
+        return new SchoolStructure(template, name, spawn, spawnFacing, type);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public void build(ServerLevel level, BlockPos origin) {
+        StructurePlaceSettings settings = new StructurePlaceSettings();
+        settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
+        settings.addProcessor(new BlockIgnoreProcessor(FTBSchoolsBlocks.BLOCKS.getEntries()
+                .stream().map(RegistryObject::get).filter(StructureExcluded.class::isInstance)
+                .collect(ImmutableList.toImmutableList())));
+        template.placeInWorld(level, origin, settings, level.random);
     }
 }
