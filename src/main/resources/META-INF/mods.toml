@@ -1,0 +1,13 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "ftbschools"
+version = "${version}"
+displayName = "FTB Schools"
+authors = "MaxNeedsSnacks"
+description = '''
+Companion mod for FTB Academy 1.16 that adds custom school dimensions.
+Now with FTB Quests and KubeJS support!
+'''
