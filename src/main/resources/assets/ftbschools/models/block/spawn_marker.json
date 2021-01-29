@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "ftbschools:block/spawn_marker_top",
+    "front": "ftbschools:block/spawn_marker_active",
+    "side": "ftbschools:block/spawn_marker"
+  }
+}

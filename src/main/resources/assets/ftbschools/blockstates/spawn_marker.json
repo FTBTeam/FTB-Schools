@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model": "ftbschools:block/spawn_marker"},
+    "facing=south": {"model": "ftbschools:block/spawn_marker", "y": 180},
+    "facing=west": {"model": "ftbschools:block/spawn_marker", "y": 270},
+    "facing=east": {"model": "ftbschools:block/spawn_marker", "y": 90}
+  }
+}
