@@ -1,0 +1,10 @@
+{
+  "generator": {
+    "type": "ftbschools:school",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:plains"
+    }
+  },
+  "type": "ftbschools:school_night"
+}
