@@ -32,6 +32,10 @@ dependencies {
     mappings(minecraft.officialMojangMappings())
 	
     forge("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
+
+    modCompile("curse.maven:kubejs-238086:3185095")
+    modCompile("curse.maven:rhino-416294:3186772")
+    modCompile("curse.maven:architectury-forge-419699:3183867")
 }
 
 processResources {

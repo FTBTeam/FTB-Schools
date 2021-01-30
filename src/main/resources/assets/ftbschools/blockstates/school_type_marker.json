@@ -1,6 +1,0 @@
-{
-  "variants": {
-    "school_type=day": {"model": "ftbschools:block/marker_day"},
-    "school_type=night": {"model": "ftbschools:block/marker_night"}
-  }
-}
