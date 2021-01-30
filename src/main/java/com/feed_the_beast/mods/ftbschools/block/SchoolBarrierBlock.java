@@ -2,6 +2,7 @@ package com.feed_the_beast.mods.ftbschools.block;
 
 import com.feed_the_beast.mods.ftbschools.FTBSchools;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.BlockGetter;
@@ -30,16 +31,20 @@ public class SchoolBarrierBlock extends BarrierBlock {
     @Override
     public void animateTick(BlockState state, Level worldIn, BlockPos pos, Random rand) {
         if (FTBSchools.PROXY.shouldBarrierRender()) {
-            if (Minecraft.getInstance().player.isHolding(FTBSchoolsBlocks.BARRIER.get().asItem())) {
-                double d = (double) pos.getX() + 0.5 - (rand.nextDouble() * 0.1);
-                double e = (double) pos.getY() + 0.5 - (rand.nextDouble() * 0.1);
-                double f = (double) pos.getZ() + 0.5 - (rand.nextDouble() * 0.1);
-                double g = 0.4F - rand.nextDouble() * 0.8F;
-                if (rand.nextDouble() < 0.35) {
+            double d = (double) pos.getX() + 0.5 - (rand.nextDouble() * 0.1);
+            double e = (double) pos.getY() + 0.5 - (rand.nextDouble() * 0.1);
+            double f = (double) pos.getZ() + 0.5 - (rand.nextDouble() * 0.1);
+            double g = 0.4F - rand.nextDouble() * 0.8F;
+
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                if ((rand.nextDouble() < 0.35 && player.isHolding(FTBSchoolsBlocks.BARRIER.get().asItem()))
+                        || rand.nextDouble() < (1 - (pos.distSqr(player.position(), false) / 24)) * 0.5) {
                     //worldIn.addParticle(new DustParticleOptions(0x00 / 255f, 0x6d / 255f, 0x72 / 255f, rand.nextFloat() * 2), d + g, e + g, f + g, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1);
                     worldIn.addParticle(ParticleTypes.END_ROD, d + g, e + g, f + g, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005);
                 }
             }
+
         }
     }
 
