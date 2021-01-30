@@ -36,7 +36,11 @@ dependencies {
     modCompile("curse.maven:kubejs-238086:3185095")
     modCompile("curse.maven:rhino-416294:3186772")
 
-    modCompile("curse.maven:architectury-forge-419699:3183867")
+    modCompile("curse.maven:ftbguilib-404465:3184516")
+    modCompile("curse.maven:ftbq-289412:3154827")
+    modCompile("curse.maven:item-filters-289412:3183334")
+
+    modCompile("curse.maven:architectury-419699:3183867")
 
     modRuntime("curse.maven:top-245211:3157997")
 }
