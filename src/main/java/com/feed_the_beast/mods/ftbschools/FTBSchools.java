@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -25,8 +26,12 @@ public class FTBSchools {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
+    public static FTBSchoolsProxy PROXY;
+
     public FTBSchools() {
         Registry.register(Registry.CHUNK_GENERATOR, id("school"), SchoolChunkGenerator.CODEC);
+
+        PROXY = DistExecutor.safeRunForDist(() -> FTBSchoolsProxy.Client::new, () -> FTBSchoolsProxy.Common::new);
 
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
