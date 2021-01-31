@@ -42,40 +42,35 @@ public class SchoolManager {
         FTBSchools.LOGGER.info(SchoolManager.schoolTypes);
     }
 
-    public static void enterSchool(ServerPlayer player, String school) {
+    public static void enterSchool(ServerPlayer player, SchoolType school) {
         enterSchool(player, school, false);
     }
 
-    public static void enterSchool(ServerPlayer player, String school, boolean reset) {
+    public static void enterSchool(ServerPlayer player, SchoolType school, boolean reset) {
         SchoolPlayerData data = SchoolPlayerData.get(player);
 
-        if (!schoolTypes.containsKey(school)) {
-            FTBSchools.LOGGER.warn("School {} doesn't exist!", school);
-            return;
-        }
-
-        SchoolType type = schoolTypes.get(school);
-
-        if (type.equals(data.getSchool()) && !reset) {
+        if (school.equals(data.getSchool()) && !reset) {
             FTBSchools.LOGGER.warn("Player {} is already in that school!", player.getDisplayName().getString());
             return;
         }
 
-        boolean newSchool = reset || !data.hasStarted(type);
+        boolean newSchool = reset || !data.hasStarted(school);
 
-        ServerLevel schoolLevel = player.server.getLevel(type.getDimension());
+        ServerLevel schoolLevel = player.server.getLevel(school.getDimension());
 
         // TODO: save and clear inventory
 
-        BlockPos origin = Util.getCenterOfRegion(data.setSchool(type, newSchool));
-        Vec3 spawnPos = Vec3.upFromBottomCenterOf(origin.offset(type.spawnPos), 1);
+        BlockPos origin = Util.getCenterOfRegion(data.setSchool(school, newSchool));
+        Vec3 spawnPos = Vec3.upFromBottomCenterOf(origin.offset(school.spawnPos), 1);
 
         if (newSchool) {
-            type.build(schoolLevel, origin);
+            school.build(schoolLevel, origin);
+            player.sendMessage(new TextComponent("Successfully generated new school @ " + spawnPos), UUID.randomUUID());
+        } else {
             player.sendMessage(new TextComponent("Successfully generated new school @ " + spawnPos), UUID.randomUUID());
         }
 
-        player.teleportTo(schoolLevel, spawnPos.x, spawnPos.y, spawnPos.z, type.spawnFacing.toYRot(), 0);
+        player.teleportTo(schoolLevel, spawnPos.x, spawnPos.y, spawnPos.z, school.spawnFacing.toYRot(), 0);
     }
 
 }

@@ -1,11 +1,8 @@
 package com.feed_the_beast.mods.ftbschools;
 
+import com.feed_the_beast.mods.ftbschools.command.EnterSchoolCommand;
 import com.feed_the_beast.mods.ftbschools.data.SchoolData;
 import com.feed_the_beast.mods.ftbschools.world.SchoolManager;
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import net.minecraft.commands.Commands;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -29,22 +26,7 @@ public class FTBSchoolsEventHandler {
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(
-                Commands.literal("enter_school")
-                        .then(Commands.argument("school", StringArgumentType.word())
-                                .then(Commands.argument("force_reset", BoolArgumentType.bool())
-                                        .executes((ctx) -> {
-                                            SchoolManager.enterSchool(ctx.getSource().getPlayerOrException(),
-                                                    ctx.getArgument("school", String.class),
-                                                    ctx.getArgument("force_reset", Boolean.class));
-                                            return Command.SINGLE_SUCCESS;
-                                        }))
-                                .executes((ctx) -> {
-                                    SchoolManager.enterSchool(ctx.getSource().getPlayerOrException(),
-                                            ctx.getArgument("school", String.class));
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        ));
+        event.getDispatcher().register(EnterSchoolCommand.get());
     }
 
     private void serverStarted(FMLServerStartedEvent event) {
