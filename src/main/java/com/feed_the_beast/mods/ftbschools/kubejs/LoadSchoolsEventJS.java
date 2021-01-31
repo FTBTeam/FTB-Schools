@@ -1,7 +1,7 @@
 package com.feed_the_beast.mods.ftbschools.kubejs;
 
 import com.feed_the_beast.mods.ftbschools.world.SchoolManager;
-import com.feed_the_beast.mods.ftbschools.world.SchoolType;
+import com.feed_the_beast.mods.ftbschools.data.SchoolType;
 import com.google.common.collect.ImmutableMap;
 import dev.latvian.kubejs.event.EventJS;
 

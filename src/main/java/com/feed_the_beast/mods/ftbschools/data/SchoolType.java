@@ -1,4 +1,4 @@
-package com.feed_the_beast.mods.ftbschools.world;
+package com.feed_the_beast.mods.ftbschools.data;
 
 import com.feed_the_beast.mods.ftbschools.FTBSchools;
 import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsBlocks;
@@ -23,12 +23,12 @@ public class SchoolType {
     public static final ResourceKey<Level> DAY_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, FTBSchools.id("school_day"));
     public static final ResourceKey<Level> NIGHT_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, FTBSchools.id("school_night"));
 
-    final String id;
-    final Properties properties;
+    public final String id;
+    public final Properties properties;
     private final StructureTemplate template;
 
-    final BlockPos spawnPos;
-    final Direction spawnFacing;
+    public final BlockPos spawnPos;
+    public final Direction spawnFacing;
 
     public SchoolType(String id, Properties properties, StructureTemplate template) {
         this.id = id;

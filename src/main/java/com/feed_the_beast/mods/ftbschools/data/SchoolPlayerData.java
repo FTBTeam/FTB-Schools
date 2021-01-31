@@ -1,4 +1,4 @@
-package com.feed_the_beast.mods.ftbschools.player;
+package com.feed_the_beast.mods.ftbschools.data;
 
 import net.minecraft.server.level.ServerPlayer;
 
