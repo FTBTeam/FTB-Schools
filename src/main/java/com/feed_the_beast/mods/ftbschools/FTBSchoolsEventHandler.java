@@ -9,7 +9,6 @@ import net.minecraft.commands.Commands;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
@@ -49,15 +48,15 @@ public class FTBSchoolsEventHandler {
     }
 
     private void serverStarted(FMLServerStartedEvent event) {
-        SchoolData.INSTANCE.load();
+        SchoolData.INSTANCE.loadAll();
     }
 
     private void serverStopped(FMLServerStoppedEvent event) {
-        SchoolData.INSTANCE.save();
+        SchoolData.INSTANCE.saveAll();
         SchoolData.INSTANCE = null;
     }
 
     private void levelSaved(WorldEvent.Save event) {
-        SchoolData.INSTANCE.save();
+        SchoolData.INSTANCE.saveAll();
     }
 }

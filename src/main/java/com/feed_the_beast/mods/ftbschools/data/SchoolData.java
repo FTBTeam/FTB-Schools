@@ -8,8 +8,11 @@ import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class SchoolData {
+public class SchoolData extends DataHolder {
 
     public static final LevelResource FTBSCHOOLS_DATA = new LevelResource("ftbschools");
 
@@ -21,43 +24,73 @@ public class SchoolData {
     private int nextIdDay = 0;
     private int nextIdNight = 0;
 
-    private boolean dirty = false;
+    private Map<UUID, SchoolPlayerData> playerData = new HashMap<>();
 
     public SchoolData(MinecraftServer server) {
         this.server = server;
     }
 
-    public void load() {
-        filePath = server.getWorldPath(FTBSCHOOLS_DATA).resolve("root.nbt");
+    public void loadAll() {
+        Path worldData = server.getWorldPath(FTBSCHOOLS_DATA);
+        filePath = worldData.resolve("root.nbt");
 
         if (Files.exists(filePath)) {
-            Util.tryIO(() -> {
-                CompoundTag tag = NbtIo.readCompressed(filePath.toFile());
-                nextIdDay = tag.getInt("next_id_day");
-                nextIdNight = tag.getInt("next_id_night");
-            });
+            Util.tryIO(() -> load(NbtIo.readCompressed(filePath.toFile())));
+        }
+
+        Path playerPath = worldData.resolve("players/");
+        if (Files.exists(playerPath)) {
+            Util.tryIO(() -> Files.list(playerPath).forEach(path -> Util.tryIO(() -> {
+                CompoundTag tag = NbtIo.readCompressed(path.toFile());
+                if (tag.hasUUID("uuid")) {
+                    UUID uuid = tag.getUUID("uuid");
+                    SchoolPlayerData data = new SchoolPlayerData(this, uuid);
+                    playerData.put(uuid, data);
+                    data.load(tag);
+                }
+            })));
         }
     }
 
-    public void setDirty() {
-        dirty = true;
+    @Override
+    protected void load(CompoundTag tag) {
+        nextIdDay = tag.getInt("next_id_day");
+        nextIdNight = tag.getInt("next_id_night");
     }
 
-    public void save() {
-        if (dirty) {
+    public void saveAll() {
+        CompoundTag rootTag = saveChanges();
+        if (!rootTag.isEmpty()) {
             Util.getOrCreateDir(filePath.getParent());
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("next_id_day", nextIdDay);
-            tag.putInt("next_id_night", nextIdNight);
-            Util.tryIO(() -> NbtIo.writeCompressed(tag, filePath.toFile()));
-            dirty = false;
+            Util.tryIO(() -> NbtIo.writeCompressed(rootTag, filePath.toFile()));
         }
+
+        Path playerPath = filePath.getParent().resolve("players/");
+        playerData.forEach((uuid, data) -> {
+            CompoundTag playerTag = data.saveChanges();
+            if (!playerTag.isEmpty()) {
+                Util.getOrCreateDir(playerPath);
+                Util.tryIO(() -> NbtIo.writeCompressed(playerTag, filePath.resolve(uuid + ".nbt").toFile()));
+            }
+        });
+    }
+
+    @Override
+    protected CompoundTag save() {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("next_id_day", nextIdDay);
+        tag.putInt("next_id_night", nextIdNight);
+        return tag;
     }
 
     public int nextId(boolean night) {
         int r = night ? nextIdNight++ : nextIdDay++;
-        setDirty();
+        markDirty();
         return r;
+    }
+
+    public SchoolPlayerData getPlayerData(UUID uuid) {
+        return playerData.computeIfAbsent(uuid, id -> new SchoolPlayerData(this, id));
     }
 
 }

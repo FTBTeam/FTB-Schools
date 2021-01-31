@@ -1,7 +1,6 @@
 package com.feed_the_beast.mods.ftbschools.world;
 
 import com.feed_the_beast.mods.ftbschools.FTBSchools;
-import com.feed_the_beast.mods.ftbschools.data.SchoolData;
 import com.feed_the_beast.mods.ftbschools.data.SchoolPlayerData;
 import com.feed_the_beast.mods.ftbschools.data.SchoolType;
 import com.feed_the_beast.mods.ftbschools.kubejs.FTBSchoolsEvents;
@@ -47,11 +46,8 @@ public class SchoolManager {
         enterSchool(player, school, false);
     }
 
-    public static void enterSchool(ServerPlayer player, String school, boolean forceReset) {
-        if (SchoolPlayerData.getActiveSchool(player) != -1 && !forceReset) {
-            FTBSchools.LOGGER.warn("Player {} already has an active school!", player.getDisplayName().getString());
-            return;
-        }
+    public static void enterSchool(ServerPlayer player, String school, boolean reset) {
+        SchoolPlayerData data = SchoolPlayerData.get(player);
 
         if (!schoolTypes.containsKey(school)) {
             FTBSchools.LOGGER.warn("School {} doesn't exist!", school);
@@ -59,15 +55,26 @@ public class SchoolManager {
         }
 
         SchoolType type = schoolTypes.get(school);
+
+        if (type.equals(data.getSchool()) && !reset) {
+            FTBSchools.LOGGER.warn("Player {} is already in that school!", player.getDisplayName().getString());
+            return;
+        }
+
+        boolean newSchool = reset || !data.hasStarted(type);
+
         ServerLevel schoolLevel = player.server.getLevel(type.getDimension());
 
         // TODO: save and clear inventory
-        BlockPos origin = Util.getCenterOfRegion(SchoolData.INSTANCE.nextId(type.properties.night));
 
+        BlockPos origin = Util.getCenterOfRegion(data.setSchool(type, newSchool));
         Vec3 spawnPos = Vec3.upFromBottomCenterOf(origin.offset(type.spawnPos), 1);
-        player.sendMessage(new TextComponent("Successfully generated new school @ " + spawnPos), UUID.randomUUID());
 
-        type.build(schoolLevel, origin);
+        if (newSchool) {
+            type.build(schoolLevel, origin);
+            player.sendMessage(new TextComponent("Successfully generated new school @ " + spawnPos), UUID.randomUUID());
+        }
+
         player.teleportTo(schoolLevel, spawnPos.x, spawnPos.y, spawnPos.z, type.spawnFacing.toYRot(), 0);
     }
 
