@@ -67,7 +67,7 @@ public class SchoolManager {
             school.build(schoolLevel, origin);
             player.sendMessage(new TextComponent("Successfully generated new school @ " + spawnPos), UUID.randomUUID());
         } else {
-            player.sendMessage(new TextComponent("Successfully generated new school @ " + spawnPos), UUID.randomUUID());
+            player.sendMessage(new TextComponent("Teleported to existing school @ " + spawnPos), UUID.randomUUID());
         }
 
         player.teleportTo(schoolLevel, spawnPos.x, spawnPos.y, spawnPos.z, school.spawnFacing.toYRot(), 0);

@@ -51,6 +51,8 @@ public class SchoolPlayerData extends DataHolder {
     protected CompoundTag save() {
         CompoundTag tag = new CompoundTag();
 
+        tag.putUUID("uuid", uuid);
+
         CompoundTag schools = new CompoundTag();
         activeSchools.forEach((type, id) -> schools.putInt(type.id, id));
         tag.put("schools", schools);

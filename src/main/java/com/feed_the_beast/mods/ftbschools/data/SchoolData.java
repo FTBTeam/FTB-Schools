@@ -70,7 +70,7 @@ public class SchoolData extends DataHolder {
             CompoundTag playerTag = data.saveChanges();
             if (!playerTag.isEmpty()) {
                 Util.getOrCreateDir(playerPath);
-                Util.tryIO(() -> NbtIo.writeCompressed(playerTag, filePath.resolve(uuid + ".nbt").toFile()));
+                Util.tryIO(() -> NbtIo.writeCompressed(playerTag, playerPath.resolve(uuid + ".nbt").toFile()));
             }
         });
     }
