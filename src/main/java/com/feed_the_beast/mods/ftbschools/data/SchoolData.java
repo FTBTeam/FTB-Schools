@@ -21,8 +21,7 @@ public class SchoolData extends DataHolder {
     public final MinecraftServer server;
     private Path filePath;
 
-    private int nextIdDay = 0;
-    private int nextIdNight = 0;
+    private int nextId = 0;
 
     private Map<UUID, SchoolPlayerData> playerData = new HashMap<>();
 
@@ -54,8 +53,7 @@ public class SchoolData extends DataHolder {
 
     @Override
     protected void load(CompoundTag tag) {
-        nextIdDay = tag.getInt("next_id_day");
-        nextIdNight = tag.getInt("next_id_night");
+        nextId = tag.getInt("next_id");
     }
 
     public void saveAll() {
@@ -78,15 +76,13 @@ public class SchoolData extends DataHolder {
     @Override
     protected CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.putInt("next_id_day", nextIdDay);
-        tag.putInt("next_id_night", nextIdNight);
+        tag.putInt("next_id", nextId);
         return tag;
     }
 
-    public int nextId(boolean night) {
-        int r = night ? nextIdNight++ : nextIdDay++;
+    public int nextId() {
         markDirty();
-        return r;
+        return nextId++;
     }
 
     public SchoolPlayerData getPlayerData(UUID uuid) {

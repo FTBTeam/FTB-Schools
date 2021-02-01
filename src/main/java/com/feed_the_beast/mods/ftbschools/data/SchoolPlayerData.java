@@ -77,7 +77,7 @@ public class SchoolPlayerData extends DataHolder {
         currentSchoolType = type;
         if (type == null) return -1;
         if (update) {
-            int id = root.nextId(type.properties.night);
+            int id = root.nextId();
             activeSchools.put(type, id);
             markDirty();
             return id;

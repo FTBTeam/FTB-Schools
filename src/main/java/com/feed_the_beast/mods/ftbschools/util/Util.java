@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 public class Util {
 
-    private static final int SCHOOLS_PER_LINE = 256; // 65536 should be enough right?
+    private static final int SCHOOLS_PER_LINE = 1024; // 1 million should be enough right? :P
 
     public static final Path CONFIG = Util.getOrCreateDir(FMLPaths.CONFIGDIR.get().resolve(FTBSchools.MOD_ID)).normalize();
 
