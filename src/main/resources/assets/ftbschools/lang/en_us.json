@@ -1,4 +1,5 @@
 {
   "block.ftbschools.barrier": "Barrier+™",
-  "block.ftbschools.spawn_marker": "Spawn Marker"
+  "block.ftbschools.spawn_marker": "Spawn Marker",
+  "command.school.notFound": "School %s does not exist!"
 }
