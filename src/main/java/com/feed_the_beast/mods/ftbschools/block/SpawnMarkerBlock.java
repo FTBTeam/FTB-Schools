@@ -1,6 +1,5 @@
 package com.feed_the_beast.mods.ftbschools.block;
 
-import com.feed_the_beast.mods.ftbschools.util.StructureExcluded;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -10,7 +9,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import org.jetbrains.annotations.Nullable;
 
-public class SpawnMarkerBlock extends Block implements StructureExcluded {
+public class SpawnMarkerBlock extends Block {
 
     public static final DirectionProperty SPAWN_FACING = BlockStateProperties.HORIZONTAL_FACING;
 

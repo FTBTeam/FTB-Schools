@@ -1,8 +1,7 @@
 package com.feed_the_beast.mods.ftbschools;
 
 import com.feed_the_beast.mods.ftbschools.command.EnterSchoolCommand;
-import com.feed_the_beast.mods.ftbschools.data.SchoolServerData;
-import com.feed_the_beast.mods.ftbschools.world.SchoolManager;
+import com.feed_the_beast.mods.ftbschools.data.SchoolManager;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -15,8 +14,7 @@ import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 public class FTBSchoolsEventHandler {
     @SubscribeEvent
     public static void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        SchoolServerData.INSTANCE = new SchoolServerData(event.getServer());
-        SchoolManager.init();
+        SchoolManager.INSTANCE = new SchoolManager(event.getServer());
     }
 
     @SubscribeEvent
@@ -26,17 +24,17 @@ public class FTBSchoolsEventHandler {
 
     @SubscribeEvent
     public static void serverStarted(FMLServerStartedEvent event) {
-        SchoolServerData.INSTANCE.loadAll();
+        SchoolManager.INSTANCE.loadAll();
     }
 
     @SubscribeEvent
     public static void serverStopped(FMLServerStoppedEvent event) {
-        SchoolServerData.INSTANCE.saveAll();
-        SchoolServerData.INSTANCE = null;
+        SchoolManager.INSTANCE.saveAll();
+        SchoolManager.INSTANCE = null;
     }
 
     @SubscribeEvent
     public static void levelSaved(WorldEvent.Save event) {
-        SchoolServerData.INSTANCE.saveAll();
+        SchoolManager.INSTANCE.saveAll();
     }
 }

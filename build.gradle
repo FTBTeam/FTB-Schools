@@ -1,8 +1,8 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
-	id "forgified-fabric-loom" version "0.6.54"
-	id "java"
-	id "idea"
+    id "forgified-fabric-loom" version "0.6.54"
+    id "java"
+    id "idea"
 }
 
 def ENV = System.getenv()
@@ -14,27 +14,27 @@ group = project.maven_group
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 loom {
-	silentMojangMappingsLicense()
+    silentMojangMappingsLicense()
     useFabricMixin = true
 }
 
 repositories {
-	maven {
-		url "https://www.cursemaven.com"
-		content {
-			includeGroup "curse.maven"
-		}
-	}
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:${project.minecraft_version}")
     mappings(minecraft.officialMojangMappings())
-	
+
     forge("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
 
-    modCompile("curse.maven:kubejs-238086:3185095")
-    modCompile("curse.maven:rhino-416294:3186772")
+    modCompile("curse.maven:kubejs-238086:3189113")
+    modCompile("curse.maven:rhino-416294:3187177")
 
     modCompile("curse.maven:ftbguilib-404465:3184516")
     modCompile("curse.maven:ftbq-289412:3154827")
@@ -54,10 +54,10 @@ processResources {
 }
 
 tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
+    options.encoding = "UTF-8"
 
-	def targetVersion = 8
-	if (JavaVersion.current().isJava9Compatible()) {
-		options.release = targetVersion
-	}
+    def targetVersion = 8
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.release = targetVersion
+    }
 }
