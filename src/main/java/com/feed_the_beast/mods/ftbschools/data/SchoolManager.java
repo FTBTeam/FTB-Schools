@@ -193,15 +193,13 @@ public class SchoolManager extends DataHolder {
         Vec3 spawnPosD = Vec3.upFromBottomCenterOf(origin.offset(spawnPos), 1);
         float yRot = spawnFacing.toYRot();
 
-        net.minecraft.Util.backgroundExecutor().execute(() -> {
-            ServerLevel level = type.getDimension();
-            StructurePlaceSettings structurePlaceSettings = new StructurePlaceSettings();
-            structurePlaceSettings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
-            structurePlaceSettings.addProcessor(new BlockIgnoreProcessor(Arrays.asList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
-            template.placeInWorld(level, origin, structurePlaceSettings, level.random);
-            player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
-            player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
-            markDirty();
-        });
+        ServerLevel level = type.getDimension();
+        StructurePlaceSettings structurePlaceSettings = new StructurePlaceSettings();
+        structurePlaceSettings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
+        structurePlaceSettings.addProcessor(new BlockIgnoreProcessor(Arrays.asList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
+        template.placeInWorld(level, origin, structurePlaceSettings, level.random);
+        player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
+        player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
+        markDirty();
     }
 }
