@@ -14,7 +14,7 @@ public class SchoolPlayerData extends DataHolder {
 
     public final UUID uuid;
 
-    private final SchoolData root;
+    private final SchoolServerData root;
 
     /**
      * A map of ACTIVE schools per type to their IDs in the school manager.
@@ -28,7 +28,7 @@ public class SchoolPlayerData extends DataHolder {
     @Nullable
     private SchoolType currentSchoolType = null;
 
-    public SchoolPlayerData(SchoolData root, UUID uuid) {
+    public SchoolPlayerData(SchoolServerData root, UUID uuid) {
         this.root = root;
         this.uuid = uuid;
     }
@@ -88,6 +88,6 @@ public class SchoolPlayerData extends DataHolder {
     }
 
     public static SchoolPlayerData get(ServerPlayer player) {
-        return SchoolData.INSTANCE.getPlayerData(player.getUUID());
+        return SchoolServerData.INSTANCE.getPlayerData(player.getUUID());
     }
 }

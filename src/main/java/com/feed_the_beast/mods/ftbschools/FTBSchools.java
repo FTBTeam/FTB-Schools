@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 public class FTBSchools {
     public static final String MOD_ID = "ftbschools";
 
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger("FTB Schools");
 
     public static FTBSchoolsProxy PROXY;
 
@@ -29,8 +29,6 @@ public class FTBSchools {
 
         FTBSchoolsItems.ITEMS.register(modBus);
         FTBSchoolsBlocks.BLOCKS.register(modBus);
-
-        new FTBSchoolsEventHandler().init();
     }
 
     public static ResourceLocation id(String path) {

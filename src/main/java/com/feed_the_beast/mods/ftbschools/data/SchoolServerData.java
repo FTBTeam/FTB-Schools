@@ -12,11 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SchoolData extends DataHolder {
+public class SchoolServerData extends DataHolder {
 
     public static final LevelResource FTBSCHOOLS_DATA = new LevelResource("ftbschools");
 
-    public static SchoolData INSTANCE;
+    public static SchoolServerData INSTANCE;
 
     public final MinecraftServer server;
     private Path filePath;
@@ -24,9 +24,9 @@ public class SchoolData extends DataHolder {
     private int nextIdDay = 0;
     private int nextIdNight = 0;
 
-    private Map<UUID, SchoolPlayerData> playerData = new HashMap<>();
+    private final Map<UUID, SchoolPlayerData> playerData = new HashMap<>();
 
-    public SchoolData(MinecraftServer server) {
+    public SchoolServerData(MinecraftServer server) {
         this.server = server;
     }
 
