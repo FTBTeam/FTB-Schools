@@ -26,16 +26,26 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class SchoolManager extends DataHolder {
 
     public static final ResourceKey<Level> DAY_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, FTBSchools.id("school_day"));
     public static final ResourceKey<Level> NIGHT_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, FTBSchools.id("school_night"));
+
+    private static final Lazy<StructurePlaceSettings> settings = Lazy.of(() -> {
+        StructurePlaceSettings settings = new StructurePlaceSettings();
+        settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
+        settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
+        return settings;
+    });
+
     public static final LevelResource FTBSCHOOLS_DATA = new LevelResource("ftbschools");
 
     public static SchoolManager INSTANCE;
@@ -194,12 +204,14 @@ public class SchoolManager extends DataHolder {
         float yRot = spawnFacing.toYRot();
 
         ServerLevel level = type.getDimension();
-        StructurePlaceSettings structurePlaceSettings = new StructurePlaceSettings();
-        structurePlaceSettings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
-        structurePlaceSettings.addProcessor(new BlockIgnoreProcessor(Arrays.asList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
-        template.placeInWorld(level, origin, structurePlaceSettings, level.random);
-        player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
-        player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
-        markDirty();
+
+        CompletableFuture.runAsync(() -> {
+            template.placeInWorld(level, origin, settings.get(), level.random);
+        }, net.minecraft.Util.backgroundExecutor())
+                .thenRunAsync(() -> {
+                    player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
+                    player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
+                    markDirty();
+                }, server);
     }
 }
