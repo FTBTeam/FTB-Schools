@@ -8,6 +8,7 @@ import com.feed_the_beast.mods.ftbschools.kubejs.LoadSchoolsEventJS;
 import com.feed_the_beast.mods.ftbschools.util.Util;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.Tags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -20,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -43,6 +45,7 @@ public class SchoolManager extends DataHolder {
         StructurePlaceSettings settings = new StructurePlaceSettings();
         settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
         settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
+        settings.addProcessor(new BlockIgnoreProcessor(Tags.blocks().getTagOrEmpty(FTBSchools.id("no_place")).getValues()));
         return settings;
     });
 
