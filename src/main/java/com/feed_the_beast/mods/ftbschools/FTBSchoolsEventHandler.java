@@ -1,6 +1,6 @@
 package com.feed_the_beast.mods.ftbschools;
 
-import com.feed_the_beast.mods.ftbschools.command.EnterSchoolCommand;
+import com.feed_the_beast.mods.ftbschools.command.SchoolCommands;
 import com.feed_the_beast.mods.ftbschools.data.SchoolManager;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -19,7 +19,7 @@ public class FTBSchoolsEventHandler {
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(EnterSchoolCommand.get());
+        event.getDispatcher().register(SchoolCommands.get());
     }
 
     @SubscribeEvent

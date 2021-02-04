@@ -7,6 +7,7 @@ import com.feed_the_beast.mods.ftbschools.kubejs.FTBSchoolsEvents;
 import com.feed_the_beast.mods.ftbschools.kubejs.LoadSchoolsEventJS;
 import com.feed_the_beast.mods.ftbschools.util.Util;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.Tags;
 import net.minecraft.core.BlockPos;
@@ -15,13 +16,13 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -168,17 +169,6 @@ public class SchoolManager extends DataHolder {
 
     @SuppressWarnings("all")
     public void enterSchool(ServerPlayer player, SchoolType type) throws CommandSyntaxException {
-        // TODO: save and clear inventory
-
-        SchoolData school = add(type);
-        school.owner = player.getUUID();
-        school.type = type;
-        school.playerData = new CompoundTag();
-        player.saveWithoutId(school.playerData);
-        markDirty();
-
-        player.inventory.clearContent();
-        // TODO: Some hacky reflection shit to clear cuiros
 
         StructureTemplate template = server.getStructureManager().get(type.id);
 
@@ -186,6 +176,28 @@ public class SchoolManager extends DataHolder {
             FTBSchools.LOGGER.error("School type has missing kubejs/data/" + type.id.getNamespace() + "/structures/" + type.id.getPath() + ".nbt!");
             return;
         }
+
+        SchoolData previousSchool = currentSchool(player);
+
+        SchoolData school = add(type);
+        school.owner = player.getUUID();
+        school.type = type;
+        school.playerData = new CompoundTag();
+
+        if(previousSchool != null) {
+            school.playerData = previousSchool.playerData;
+            previousSchool.playerData = null;
+        } else {
+            player.saveWithoutId(school.playerData);
+        }
+        markDirty();
+
+        player.inventory.clearContent();
+        player.removeAllEffects();
+        player.setExperiencePoints(0);
+        player.clearFire();
+        player.setHealth(player.getMaxHealth());
+        // TODO: Some hacky reflection shit to clear cuiros
 
         BlockPos origin = school.getLocation();
 
@@ -216,5 +228,24 @@ public class SchoolManager extends DataHolder {
                     player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
                     markDirty();
                 }, server);
+    }
+
+    public void leaveSchool(ServerPlayer player) throws CommandSyntaxException {
+        SchoolData data = currentSchool(player);
+        if (data == null) {
+            throw new SimpleCommandExceptionType(new TextComponent("You are not in a school!")).create();
+        }
+
+        CompoundTag tag = data.playerData;
+        data.playerData = null;
+
+        ResourceKey<Level> levelKey = Level.RESOURCE_KEY_CODEC.parse(NbtOps.INSTANCE, tag.get("Dimension")).result().orElse(Level.OVERWORLD);
+        ListTag pos = tag.getList("Pos", 6);
+        ListTag delta = tag.getList("Motion", 6);
+        ListTag rot = tag.getList("Rotation", 5);
+
+        player.load(tag);
+        player.teleportTo(server.getLevel(levelKey), pos.getDouble(0), pos.getDouble(1), pos.getDouble(2), rot.getFloat(0), rot.getFloat(1));
+        player.setDeltaMovement(delta.getDouble(0), delta.getDouble(1), delta.getDouble(2));
     }
 }

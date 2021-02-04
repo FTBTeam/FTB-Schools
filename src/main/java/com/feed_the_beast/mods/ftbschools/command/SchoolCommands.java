@@ -7,16 +7,25 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-public class EnterSchoolCommand {
+public class SchoolCommands {
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
-        return Commands.literal("enter_school")
-                .then(Commands.argument("school", SchoolArgumentType.school())
-                        .executes(ctx -> enterSchool(ctx.getSource(), SchoolArgumentType.getSchool(ctx, "school")))
+        return Commands.literal("school")
+                .then(Commands.literal("enter")
+                        .then(Commands.argument("school", SchoolArgumentType.school())
+                                .executes(ctx -> enterSchool(ctx.getSource(), SchoolArgumentType.getSchool(ctx, "school")))
+                        ))
+                .then(Commands.literal("leave")
+                        .executes(ctx -> leaveSchool(ctx.getSource()))
                 );
     }
 
     public static int enterSchool(CommandSourceStack stack, SchoolType type) throws CommandSyntaxException {
         SchoolManager.INSTANCE.enterSchool(stack.getPlayerOrException(), type);
+        return 1;
+    }
+
+    public static int leaveSchool(CommandSourceStack stack) throws CommandSyntaxException {
+        SchoolManager.INSTANCE.leaveSchool(stack.getPlayerOrException());
         return 1;
     }
 }
