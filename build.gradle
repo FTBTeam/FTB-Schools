@@ -43,6 +43,9 @@ dependencies {
     modCompile("curse.maven:architectury-419699:3183867")
 
     modRuntime("curse.maven:top-245211:3157997")
+
+    modRuntime("curse.maven:ybms-389665:3175671")
+    modRuntime("curse.maven:yapi-421850:3186128")
 }
 
 processResources {

@@ -3,7 +3,7 @@
     "type": "ftbschools:school",
     "biome_source": {
       "type": "minecraft:fixed",
-      "biome": "minecraft:plains"
+      "biome": "ftbschools:school_biome"
     }
   },
   "type": "ftbschools:school_night"
