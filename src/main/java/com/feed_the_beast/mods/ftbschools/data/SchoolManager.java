@@ -35,7 +35,6 @@ import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 public class SchoolManager extends DataHolder {
 
@@ -184,7 +183,7 @@ public class SchoolManager extends DataHolder {
         school.type = type;
         school.playerData = new CompoundTag();
 
-        if(previousSchool != null) {
+        if (previousSchool != null) {
             school.playerData = previousSchool.playerData;
             previousSchool.playerData = null;
         } else {
@@ -220,14 +219,10 @@ public class SchoolManager extends DataHolder {
 
         ServerLevel level = type.getDimension();
 
-        CompletableFuture.runAsync(() -> {
-            template.placeInWorld(level, origin, settings.get(), level.random);
-        }, net.minecraft.Util.backgroundExecutor())
-                .thenRunAsync(() -> {
-                    player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
-                    player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
-                    markDirty();
-                }, server);
+        template.placeInWorld(level, origin, settings.get(), level.random);
+        player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
+        player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
+        markDirty();
     }
 
     public void leaveSchool(ServerPlayer player) throws CommandSyntaxException {
