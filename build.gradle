@@ -1,6 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
-    id "forgified-fabric-loom" version "0.6.60"
+    id "forgified-fabric-loom" version "0.6.64"
     id "java"
     id "idea"
 }
