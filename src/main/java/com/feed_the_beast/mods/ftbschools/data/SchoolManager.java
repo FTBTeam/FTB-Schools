@@ -222,6 +222,7 @@ public class SchoolManager extends DataHolder {
         template.placeInWorld(level, origin, settings.get(), level.random);
         player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
         player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
+        player.setRespawnPosition(level.dimension(), origin.offset(spawnPos), yRot, true, false);
         markDirty();
     }
 
