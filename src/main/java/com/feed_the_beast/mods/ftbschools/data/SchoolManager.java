@@ -214,7 +214,7 @@ public class SchoolManager extends DataHolder {
             spawnPos = BlockPos.ZERO;
         }
 
-        Vec3 spawnPosD = Vec3.upFromBottomCenterOf(origin.offset(spawnPos), 1);
+        Vec3 spawnPosD = Vec3.upFromBottomCenterOf(origin.offset(spawnPos), 0.5);
         float yRot = spawnFacing.toYRot();
 
         ServerLevel level = type.getDimension();
