@@ -1,6 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
-    id "forgified-fabric-loom" version "0.6.66"
+    id "forgified-fabric-loom" version "0.6.72"
     id "java"
     id "idea"
 }
@@ -44,8 +44,9 @@ dependencies {
 
     modRuntime("curse.maven:top-245211:3157997")
 
-    modRuntime("curse.maven:ybms-389665:3175671")
-    modRuntime("curse.maven:yapi-421850:3186128")
+    modRuntime("curse.maven:astral-241721:3156477")
+    modRuntime("curse.maven:curios-309927:3186427")
+    modRuntime("curse.maven:olib-316833:3162044")
 }
 
 processResources {

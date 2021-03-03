@@ -5,6 +5,7 @@ import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsBlocks;
 import com.feed_the_beast.mods.ftbschools.block.SpawnMarkerBlock;
 import com.feed_the_beast.mods.ftbschools.kubejs.FTBSchoolsEvents;
 import com.feed_the_beast.mods.ftbschools.kubejs.LoadSchoolsEventJS;
+import com.feed_the_beast.mods.ftbschools.structure.NbtFixerProcessor;
 import com.feed_the_beast.mods.ftbschools.util.Util;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -23,10 +24,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.*;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.Lazy;
@@ -34,7 +35,12 @@ import net.minecraftforge.common.util.Lazy;
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class SchoolManager extends DataHolder {
 
@@ -43,9 +49,12 @@ public class SchoolManager extends DataHolder {
 
     private static final Lazy<StructurePlaceSettings> settings = Lazy.of(() -> {
         StructurePlaceSettings settings = new StructurePlaceSettings();
+
         settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
         settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
         settings.addProcessor(new BlockIgnoreProcessor(Tags.blocks().getTagOrEmpty(FTBSchools.id("no_place")).getValues()));
+        settings.addProcessor(new NbtFixerProcessor());
+
         return settings;
     });
 
@@ -214,7 +223,7 @@ public class SchoolManager extends DataHolder {
             spawnPos = BlockPos.ZERO;
         }
 
-        Vec3 spawnPosD = Vec3.upFromBottomCenterOf(origin.offset(spawnPos), 0.5);
+        Vec3 spawnPosD = Vec3.atBottomCenterOf(origin.offset(spawnPos));
         float yRot = spawnFacing.toYRot();
 
         ServerLevel level = type.getDimension();
@@ -240,8 +249,12 @@ public class SchoolManager extends DataHolder {
         ListTag delta = tag.getList("Motion", 6);
         ListTag rot = tag.getList("Rotation", 5);
 
+        int gameMode = tag.getInt("playerGameType");
+
         player.load(tag);
         player.teleportTo(server.getLevel(levelKey), pos.getDouble(0), pos.getDouble(1), pos.getDouble(2), rot.getFloat(0), rot.getFloat(1));
         player.setDeltaMovement(delta.getDouble(0), delta.getDouble(1), delta.getDouble(2));
+        player.setGameMode(GameType.byId(gameMode, GameType.SURVIVAL));
+
     }
 }
