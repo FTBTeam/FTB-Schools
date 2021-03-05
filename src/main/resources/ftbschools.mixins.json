@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.feed_the_beast.mods.ftbschools.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "StructureTemplateMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

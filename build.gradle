@@ -1,6 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
-    id "forgified-fabric-loom" version "0.6.72"
+    id "forgified-fabric-loom" version "0.6.74"
     id "java"
     id "idea"
 }
@@ -16,6 +16,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 loom {
     silentMojangMappingsLicense()
     useFabricMixin = true
+    mixinConfig "ftbschools.mixins.json"
 }
 
 repositories {
@@ -44,9 +45,9 @@ dependencies {
 
     modRuntime("curse.maven:top-245211:3157997")
 
-    modRuntime("curse.maven:astral-241721:3156477")
+    /*modRuntime("curse.maven:astral-241721:3156477")
     modRuntime("curse.maven:curios-309927:3186427")
-    modRuntime("curse.maven:olib-316833:3162044")
+    modRuntime("curse.maven:olib-316833:3162044")*/
 }
 
 processResources {
