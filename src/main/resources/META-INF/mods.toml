@@ -8,6 +8,5 @@ version = "${version}"
 displayName = "FTB Schools"
 authors = "MaxNeedsSnacks"
 description = '''
-Companion mod for FTB Academy 1.16 that adds custom school dimensions.
-Now with FTB Quests and KubeJS support!
+Companion mod for FTB Academy 1.16 that adds custom school dimensions you can configure with KubeJS scripts!
 '''

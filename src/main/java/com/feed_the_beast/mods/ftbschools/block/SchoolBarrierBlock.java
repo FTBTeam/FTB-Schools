@@ -20,7 +20,7 @@ import java.util.Random;
 public class SchoolBarrierBlock extends BarrierBlock {
 
     public SchoolBarrierBlock() {
-        super(Properties.copy(Blocks.BARRIER));
+        super(Properties.copy(Blocks.BARRIER).noOcclusion());
     }
 
     @Override
@@ -38,8 +38,8 @@ public class SchoolBarrierBlock extends BarrierBlock {
 
             LocalPlayer player = Minecraft.getInstance().player;
             if (player != null) {
-                if ((rand.nextDouble() < 0.35 && player.isHolding(FTBSchoolsBlocks.BARRIER.get().asItem()))
-                        || rand.nextDouble() < (1 - (pos.distSqr(player.position(), false) / 24)) * 0.5) {
+                if ((rand.nextDouble() < 0.5 && player.isHolding(FTBSchoolsBlocks.BARRIER.get().asItem()))
+                        || rand.nextDouble() < (1 - (pos.distSqr(player.position(), false) / 32)) * 0.5) {
                     //worldIn.addParticle(new DustParticleOptions(0x00 / 255f, 0x6d / 255f, 0x72 / 255f, rand.nextFloat() * 2), d + g, e + g, f + g, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1);
                     worldIn.addParticle(ParticleTypes.END_ROD, d + g, e + g, f + g, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005);
                 }
