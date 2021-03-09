@@ -5,6 +5,7 @@ import com.feed_the_beast.mods.ftbschools.block.FTBSchoolsBlocks;
 import com.feed_the_beast.mods.ftbschools.block.SpawnMarkerBlock;
 import com.feed_the_beast.mods.ftbschools.kubejs.FTBSchoolsEvents;
 import com.feed_the_beast.mods.ftbschools.kubejs.LoadSchoolsEventJS;
+import com.feed_the_beast.mods.ftbschools.kubejs.SchoolEventJS;
 import com.feed_the_beast.mods.ftbschools.structure.NbtFixerProcessor;
 import com.feed_the_beast.mods.ftbschools.util.Util;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -36,7 +37,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class SchoolManager extends DataHolder {
 
@@ -174,10 +180,12 @@ public class SchoolManager extends DataHolder {
     @SuppressWarnings("all")
     public void enterSchool(ServerPlayer player, SchoolType type) throws CommandSyntaxException {
 
-        StructureTemplate template = server.getStructureManager().get(type.id);
+        ResourceLocation id = type.id;
+
+        StructureTemplate template = server.getStructureManager().get(id);
 
         if (template == null) {
-            FTBSchools.LOGGER.error("School type has missing kubejs/data/" + type.id.getNamespace() + "/structures/" + type.id.getPath() + ".nbt!");
+            FTBSchools.LOGGER.error("School type has missing kubejs/data/" + id.getNamespace() + "/structures/" + id.getPath() + ".nbt!");
             return;
         }
 
@@ -215,7 +223,7 @@ public class SchoolManager extends DataHolder {
         }
 
         if (spawnPos == null) {
-            FTBSchools.LOGGER.warn("School structure {} has no spawn point set! Players will spawnPos at the origin!", type.id);
+            FTBSchools.LOGGER.warn("School structure {} has no spawn point set! Players will spawnPos at the origin!", id);
             spawnPos = BlockPos.ZERO;
         }
 
@@ -225,13 +233,17 @@ public class SchoolManager extends DataHolder {
         ServerLevel level = type.getDimension();
 
         template.placeInWorld(level, origin, settings.get(), level.random);
-        player.sendMessage(new TextComponent("Successfully generated new school " + type.id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
+        player.sendMessage(new TextComponent("Successfully generated new school " + id + "/#" + school.index + " @ " + spawnPosD), UUID.randomUUID());
         player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
         player.setRespawnPosition(level.dimension(), origin.offset(spawnPos), yRot, true, false);
+
+        new SchoolEventJS.Enter(school, player)
+                .post(ScriptType.SERVER, FTBSchoolsEvents.ENTER_SCHOOL, id.getNamespace() + "." + id.getPath());
+
         markDirty();
     }
 
-    public void leaveSchool(ServerPlayer player) throws CommandSyntaxException {
+    public void leaveSchool(ServerPlayer player, boolean droppedOut) throws CommandSyntaxException {
         SchoolData data = currentSchool(player);
         if (data == null) {
             throw new SimpleCommandExceptionType(new TextComponent("You are not in a school!")).create();
@@ -251,6 +263,10 @@ public class SchoolManager extends DataHolder {
         player.teleportTo(server.getLevel(levelKey), pos.getDouble(0), pos.getDouble(1), pos.getDouble(2), rot.getFloat(0), rot.getFloat(1));
         player.setDeltaMovement(delta.getDouble(0), delta.getDouble(1), delta.getDouble(2));
         player.setGameMode(GameType.byId(gameMode, GameType.SURVIVAL));
+
+        ResourceLocation id = data.type.id;
+        new SchoolEventJS.Leave(data, player, droppedOut)
+                .post(ScriptType.SERVER, FTBSchoolsEvents.ENTER_SCHOOL, id.getNamespace() + "." + id.getPath());
 
     }
 }
