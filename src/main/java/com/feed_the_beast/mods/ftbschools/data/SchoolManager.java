@@ -37,12 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class SchoolManager extends DataHolder {
 
@@ -199,6 +194,8 @@ public class SchoolManager extends DataHolder {
         if (previousSchool != null) {
             school.playerData = previousSchool.playerData;
             previousSchool.playerData = null;
+            new SchoolEventJS.Leave(previousSchool, player, true)
+                    .post(ScriptType.SERVER, FTBSchoolsEvents.ENTER_SCHOOL, id.getNamespace() + "." + id.getPath());
         } else {
             player.saveWithoutId(school.playerData);
         }

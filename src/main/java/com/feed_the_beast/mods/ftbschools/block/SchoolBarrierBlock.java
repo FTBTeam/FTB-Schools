@@ -20,7 +20,7 @@ import java.util.Random;
 public class SchoolBarrierBlock extends BarrierBlock {
 
     public SchoolBarrierBlock() {
-        super(Properties.copy(Blocks.BARRIER).noOcclusion());
+        super(Properties.copy(Blocks.BARRIER));
     }
 
     @Override

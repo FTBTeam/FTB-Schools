@@ -14,7 +14,7 @@ public class SpawnMarkerBlock extends Block {
     public static final DirectionProperty SPAWN_FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public SpawnMarkerBlock() {
-        super(Properties.copy(Blocks.WHITE_WOOL));
+        super(Properties.copy(Blocks.WHITE_WOOL).noOcclusion());
     }
 
     @Override
