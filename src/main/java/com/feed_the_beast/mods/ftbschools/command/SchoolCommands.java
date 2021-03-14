@@ -25,6 +25,12 @@ public class SchoolCommands {
                                 )
                         ))
                 .then(Commands.literal("leave")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .requires(s -> s.hasPermission(2))
+                                .executes(ctx ->
+                                        leaveSchool(EntityArgument.getPlayer(ctx, "player"), true)
+                                )
+                        )
                         .executes(ctx ->
                                 leaveSchool(ctx.getSource().getPlayerOrException(), true)
                         )
