@@ -200,7 +200,7 @@ public class SchoolManager extends DataHolder {
             player.saveWithoutId(school.playerData);
         }
 
-        if(player.getRespawnPosition() == null) {
+        if (player.getRespawnPosition() == null) {
             school.playerData.putBoolean("noRespawnPoint", true);
         }
 
@@ -208,7 +208,7 @@ public class SchoolManager extends DataHolder {
 
         player.inventory.clearContent();
         player.removeAllEffects();
-        player.setExperiencePoints(0);
+        player.giveExperienceLevels(Integer.MIN_VALUE);
         player.clearFire();
         player.setHealth(player.getMaxHealth());
         // TODO: Some hacky reflection shit to clear cuiros
@@ -263,7 +263,7 @@ public class SchoolManager extends DataHolder {
 
         player.load(tag);
 
-        if(tag.getBoolean("noRespawnPoint")) {
+        if (tag.getBoolean("noRespawnPoint")) {
             player.setRespawnPosition(Level.OVERWORLD, null, 0.5f, false, false);
         }
         tag.remove("noRespawnPoint");
