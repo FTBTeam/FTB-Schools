@@ -195,7 +195,7 @@ public class SchoolManager extends DataHolder {
             school.playerData = previousSchool.playerData;
             previousSchool.playerData = null;
             new SchoolEventJS.Leave(previousSchool, player, true)
-                    .post(ScriptType.SERVER, FTBSchoolsEvents.ENTER_SCHOOL, id.getNamespace() + "." + id.getPath());
+                    .post(ScriptType.SERVER, FTBSchoolsEvents.LEAVE_SCHOOL, id.getNamespace() + "." + id.getPath());
         } else {
             player.saveWithoutId(school.playerData);
         }
@@ -274,7 +274,7 @@ public class SchoolManager extends DataHolder {
 
         ResourceLocation id = data.type.id;
         new SchoolEventJS.Leave(data, player, droppedOut)
-                .post(ScriptType.SERVER, FTBSchoolsEvents.ENTER_SCHOOL, id.getNamespace() + "." + id.getPath());
+                .post(ScriptType.SERVER, FTBSchoolsEvents.LEAVE_SCHOOL, id.getNamespace() + "." + id.getPath());
 
     }
 }
