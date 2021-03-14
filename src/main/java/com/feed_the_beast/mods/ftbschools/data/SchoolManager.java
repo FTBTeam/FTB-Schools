@@ -199,6 +199,11 @@ public class SchoolManager extends DataHolder {
         } else {
             player.saveWithoutId(school.playerData);
         }
+
+        if(player.getRespawnPosition() == null) {
+            school.playerData.putBoolean("noRespawnPoint", true);
+        }
+
         markDirty();
 
         player.inventory.clearContent();
@@ -257,6 +262,12 @@ public class SchoolManager extends DataHolder {
         int gameMode = tag.getInt("playerGameType");
 
         player.load(tag);
+
+        if(tag.getBoolean("noRespawnPoint")) {
+            player.setRespawnPosition(Level.OVERWORLD, null, 0.5f, false, false);
+        }
+        tag.remove("noRespawnPoint");
+
         player.teleportTo(server.getLevel(levelKey), pos.getDouble(0), pos.getDouble(1), pos.getDouble(2), rot.getFloat(0), rot.getFloat(1));
         player.setDeltaMovement(delta.getDouble(0), delta.getDouble(1), delta.getDouble(2));
         player.setGameMode(GameType.byId(gameMode, GameType.SURVIVAL));
