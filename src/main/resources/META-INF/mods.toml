@@ -1,12 +1,48 @@
 modLoader = "javafml"
-loaderVersion = "[36,)"
+loaderVersion = "[43,)"
+issueTrackerURL = "https://go.ftb.team/support-mod-issues"
 license = "All Rights Reserved"
 
 [[mods]]
 modId = "ftbschools"
 version = "${version}"
 displayName = "FTB Schools"
-authors = "MaxNeedsSnacks"
+authors = "FTB Team"
 description = '''
-Companion mod for FTB Academy 1.16 that adds custom school dimensions you can configure with KubeJS scripts!
+Companion mod for FTB Academy & FTB University that adds custom school dimensions you can configure with KubeJS scripts!
 '''
+
+[[dependencies.ftbschools]]
+modId = "forge"
+mandatory = true
+versionRange = "[43.2.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbschools]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.2]"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbschools]]
+modId = "ftblibrary"
+mandatory = true
+versionRange = "[${libraryversion},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ftbschools]]
+modId = "ftbquests"
+mandatory = true
+versionRange = "[${questsversion},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ftbschools]]
+modId = "kubejs"
+mandatory = false
+versionRange = "[${kubejsversion},)"
+ordering = "AFTER"
+side = "BOTH"

@@ -1,25 +1,58 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
-    id "forgified-fabric-loom" version "0.6.78"
-    id "java"
-    id "idea"
+    id "dev.architectury.loom" version "0.12.0-SNAPSHOT"
+    id "com.matthewprenger.cursegradle" version "1.4.0"
+    id "maven-publish"
 }
 
 def ENV = System.getenv()
 
-archivesBaseName = project.archives_base_name
-version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
-group = project.maven_group
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+version = "${project.mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
+group = project.maven_group
+archivesBaseName = project.archives_base_name
+
+// needs to be done AFTER version is set
+apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"
 
 loom {
     silentMojangMappingsLicense()
-    useFabricMixin = true
-    mixinConfig "ftbschools.mixins.json"
+
+    forge {
+        // specify the mixin configs used in this mod
+        // this will be added to the jar manifest as well!
+        mixinConfigs = [
+                "ftbschools.mixins.json"
+        ]
+        dataGen {
+            mod project.mod_id
+        }
+//        useFabricMixin = true
+    }
+
+    launches {
+        data {
+            arg "--existing", file("src/main/resources").absolutePath
+        }
+    }
 }
 
 repositories {
+    mavenLocal()
+
+    maven {
+        url "https://maven.architectury.dev/"
+    }
+
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+
+    maven {
+        url "https://maven.saps.dev/minecraft"
+    }
+
     maven {
         url "https://www.cursemaven.com"
         content {
@@ -30,39 +63,121 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${project.minecraft_version}")
-    mappings(minecraft.officialMojangMappings())
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.19.2:2022.11.27@zip")
+    }
+    forge "net.minecraftforge:forge:${project.forge_version}"
 
-    forge("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
+    modImplementation("dev.ftb.mods:ftb-library-forge:${ftb_library_version}") { transitive false }
+    modImplementation("dev.ftb.mods:ftb-quests-forge:${ftb_quests_version}")
+    modImplementation "dev.latvian.mods:kubejs-forge:${rootProject.kubejs_version}"
 
-    modCompile("curse.maven:kubejs-238086:3189113")
-    modCompile("curse.maven:rhino-416294:3187177")
-
-    modCompile("curse.maven:ftbguilib-404465:3184516")
-    modCompile("curse.maven:ftbq-289412:3154827")
-    modCompile("curse.maven:item-filters-289412:3183334")
-
-    modCompile("curse.maven:architectury-419699:3183867")
-
-    modRuntime("curse.maven:top-245211:3157997")
+//    modCompile("curse.maven:kubejs-238086:3189113")
+//    modCompile("curse.maven:rhino-416294:3187177")
+//
+//    modCompile("curse.maven:ftbguilib-404465:3184516")
+//    modCompile("curse.maven:ftbq-289412:3154827")
+//    modCompile("curse.maven:item-filters-289412:3183334")
+//
+//    modCompile("curse.maven:architectury-419699:3183867")
+//
+//    modRuntime("curse.maven:top-245211:3157997")
 
     /*modRuntime("curse.maven:astral-241721:3156477")
     modRuntime("curse.maven:curios-309927:3186427")
     modRuntime("curse.maven:olib-316833:3162044")*/
 }
 
+apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
+
+
 processResources {
     inputs.property "version", project.version
 
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+        expand "version": project.version,
+                "libraryversion": project.ftb_library_version,
+                "questsversion": project.ftb_library_version,
+                "kubejsversion": project.kubejs_version
     }
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+    options.release = 17
+}
 
-    def targetVersion = 8
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.release = targetVersion
+java {
+    withSourcesJar()
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : project.mod_id,
+                "Specification-Vendor"    : project.mod_author,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : project.mod_author,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.archivesBaseName
+            version ftbPublishing.mavenVersion
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        if (ftbPublishing.ftbToken) {
+            maven {
+                url ftbPublishing.ftbURL
+                credentials {
+                    username = ftbPublishing.ftbUser
+                    password = ftbPublishing.ftbToken
+                }
+            }
+        }
+
+        if (ftbPublishing.sapsToken) {
+            maven {
+                url ftbPublishing.sapsURL
+                credentials {
+                    username = ftbPublishing.sapsUser
+                    password = ftbPublishing.sapsToken
+                }
+            }
+        }
+    }
+}
+
+if (ENV.CURSEFORGE_KEY) {
+    curseforge {
+        apiKey = ENV.CURSEFORGE_KEY
+        project {
+            id = project.curseforge_id
+            releaseType = ftbPublishing.relType
+            addGameVersion "Forge"
+            addGameVersion rootProject.minecraft_version
+            mainArtifact(remapJar.archiveFile)
+            relations {
+            }
+            changelog = ENV.CHANGELOG  // expected to exist if ENV.CURSEFORGE does
+            changelogType = 'markdown'
+        }
     }
 }
