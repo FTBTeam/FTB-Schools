@@ -1,9 +1,9 @@
 package dev.ftb.mods.ftbschools;
 
-import dev.ftb.mods.ftbschools.register.FTBSchoolsBlocks;
-import dev.ftb.mods.ftbschools.register.FTBSchoolsChunkGenerators;
-import dev.ftb.mods.ftbschools.register.FTBSchoolsItems;
-import dev.ftb.mods.ftbschools.register.FTBSchoolsArgumentTypes;
+import dev.ftb.mods.ftbschools.register.ModBlocks;
+import dev.ftb.mods.ftbschools.register.ModChunkGenerators;
+import dev.ftb.mods.ftbschools.register.ModItems;
+import dev.ftb.mods.ftbschools.register.ModArgumentTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -25,10 +25,10 @@ public class FTBSchools {
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        FTBSchoolsItems.ITEMS.register(modBus);
-        FTBSchoolsBlocks.BLOCKS.register(modBus);
-        FTBSchoolsChunkGenerators.CHUNK_GEN.register(modBus);
-        FTBSchoolsArgumentTypes.ARG_TYPES.register(modBus);
+        ModItems.ITEMS.register(modBus);
+        ModBlocks.BLOCKS.register(modBus);
+        ModChunkGenerators.CHUNK_GEN.register(modBus);
+        ModArgumentTypes.ARG_TYPES.register(modBus);
     }
 
     public static ResourceLocation id(String path) {

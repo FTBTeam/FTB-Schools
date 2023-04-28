@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
 
 public class FTBSchoolsEvents {
-    public static final EventGroup EVENT_GROUP = EventGroup.of("FTBSchoolsEvents");
+    public static final EventGroup EVENT_GROUP = EventGroup.of("FTBSchools");
 
     public static final EventHandler LOAD_SCHOOLS = EVENT_GROUP.server("loadSchools", () -> LoadSchoolsEventJS.class);
     public static final EventHandler ENTER_SCHOOL = EVENT_GROUP.server("enterSchool", () -> SchoolEventJS.Enter.class).extra(Extra.STRING);

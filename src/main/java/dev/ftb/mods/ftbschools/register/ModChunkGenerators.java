@@ -8,7 +8,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class FTBSchoolsChunkGenerators {
+public class ModChunkGenerators {
     public static DeferredRegister<Codec<? extends ChunkGenerator>> CHUNK_GEN
             = DeferredRegister.create(Registry.CHUNK_GENERATOR_REGISTRY, FTBSchools.MOD_ID);
 

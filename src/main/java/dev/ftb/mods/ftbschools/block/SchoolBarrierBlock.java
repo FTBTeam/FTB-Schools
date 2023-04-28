@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbschools.block;
 
 import dev.ftb.mods.ftbschools.FTBSchools;
-import dev.ftb.mods.ftbschools.register.FTBSchoolsBlocks;
+import dev.ftb.mods.ftbschools.register.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -38,7 +38,7 @@ public class SchoolBarrierBlock extends BarrierBlock {
 
             LocalPlayer player = Minecraft.getInstance().player;
             if (player != null) {
-                if ((rand.nextDouble() < 0.5 && player.isHolding(FTBSchoolsBlocks.BARRIER.get().asItem()))
+                if ((rand.nextDouble() < 0.5 && player.isHolding(ModBlocks.BARRIER.get().asItem()))
                         || rand.nextDouble() < (1 - (pos.distSqr(player.blockPosition()) / 32)) * 0.5) {
                     //worldIn.addParticle(new DustParticleOptions(0x00 / 255f, 0x6d / 255f, 0x72 / 255f, rand.nextFloat() * 2), d + g, e + g, f + g, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1);
                     worldIn.addParticle(ParticleTypes.END_ROD, d + g, e + g, f + g, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005);

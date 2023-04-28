@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbschools.structure;
 
 import com.mojang.serialization.Codec;
 import dev.ftb.mods.ftbschools.FTBSchools;
+import dev.ftb.mods.ftbschools.register.ModStructureProcessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -15,52 +16,15 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public class NbtFixerProcessor extends StructureProcessor {
-    public static final List<NbtFixerRule> RULES = List.of(
-            new NbtFixerRule(registryNameMatch(
-                    "astralsorcery:rock_collector_crystal",
-                    "astralsorcery:celestial_collector_crystal",
-                    "astralsorcery:lens",
-                    "astralsorcery:prism"
-            ), (info, relativePos) -> {
-                CompoundTag nbt = info.nbt.copy();
-                CompoundTag savedData = nbt.getCompound("ftbschools.saved");
-
-                BlockPos oldPos = new BlockPos(savedData.getInt("x"), savedData.getInt("y"), savedData.getInt("z"));
-                BlockPos newPos = info.pos;
-
-                // Fix own position
-
-                ResourceLocation id = ForgeRegistries.BLOCKS.getKey(info.state.getBlock());
-                FTBSchools.LOGGER.info("Fixing nbt for object {} with pos {} -> {}", id, oldPos.toShortString(), newPos.toShortString());
-                FTBSchools.LOGGER.info("Offset: {}", newPos.subtract(oldPos).toShortString());
-
-                // Fix linked positions
-                nbt.getList("linked", Tag.TAG_COMPOUND).forEach(tag -> {
-                    FTBSchools.LOGGER.info("Fixing link: {}", tag);
-                    bPosFixAstral((CompoundTag) tag, newPos.subtract(oldPos));
-                    FTBSchools.LOGGER.info("Fixed link: {}", tag);
-                });
-
-                // Fix other connections (on lenses)
-                nbt.getList("occupiedConnections", Tag.TAG_COMPOUND).forEach(tag -> {
-                    FTBSchools.LOGGER.info("Fixing connection: {}", tag);
-                    bPosFixAstral((CompoundTag) tag, newPos.subtract(oldPos));
-                    FTBSchools.LOGGER.info("Fixed connection: {}", tag);
-                });
-
-                return new StructureBlockInfo(info.pos, info.state, nbt);
-            }
-            )
-    );
+    public static final List<NbtFixerRule> RULES = new ArrayList<>();
 
     public static final Codec<NbtFixerProcessor> CODEC = Codec.unit(NbtFixerProcessor::new);
-
-    private static final StructureProcessorType<NbtFixerProcessor> TYPE = StructureProcessorType.register("ftbschools:nbt_fixer", CODEC);
 
     @Nullable
     @Override
@@ -77,7 +41,7 @@ public class NbtFixerProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return TYPE;
+        return ModStructureProcessors.NBT_FIXER.get();
     }
 
     private static void bPosFixAstral(CompoundTag pos, BlockPos offset) {
@@ -99,9 +63,49 @@ public class NbtFixerProcessor extends StructureProcessor {
         };
     }
 
-    private record NbtFixerRule(Predicate<StructureBlockInfo> predicate,
-                                BiFunction<StructureBlockInfo, BlockPos, StructureBlockInfo> transformer) {
-        private StructureBlockInfo apply(StructureBlockInfo info, BlockPos rel) {
+    static {
+        RULES.add(
+                new NbtFixerRule(registryNameMatch(
+                        "astralsorcery:rock_collector_crystal",
+                        "astralsorcery:celestial_collector_crystal",
+                        "astralsorcery:lens",
+                        "astralsorcery:prism"
+                ), (info, relativePos) -> {
+                    CompoundTag nbt = info.nbt.copy();
+                    CompoundTag savedData = nbt.getCompound("ftbschools.saved");
+
+                    BlockPos oldPos = new BlockPos(savedData.getInt("x"), savedData.getInt("y"), savedData.getInt("z"));
+                    BlockPos newPos = info.pos;
+
+                    // Fix own position
+
+                    ResourceLocation id = ForgeRegistries.BLOCKS.getKey(info.state.getBlock());
+                    FTBSchools.LOGGER.info("Fixing nbt for object {} with pos {} -> {}", id, oldPos.toShortString(), newPos.toShortString());
+                    FTBSchools.LOGGER.info("Offset: {}", newPos.subtract(oldPos).toShortString());
+
+                    // Fix linked positions
+                    nbt.getList("linked", Tag.TAG_COMPOUND).forEach(tag -> {
+                        FTBSchools.LOGGER.info("Fixing link: {}", tag);
+                        bPosFixAstral((CompoundTag) tag, newPos.subtract(oldPos));
+                        FTBSchools.LOGGER.info("Fixed link: {}", tag);
+                    });
+
+                    // Fix other connections (on lenses)
+                    nbt.getList("occupiedConnections", Tag.TAG_COMPOUND).forEach(tag -> {
+                        FTBSchools.LOGGER.info("Fixing connection: {}", tag);
+                        bPosFixAstral((CompoundTag) tag, newPos.subtract(oldPos));
+                        FTBSchools.LOGGER.info("Fixed connection: {}", tag);
+                    });
+
+                    return new StructureBlockInfo(info.pos, info.state, nbt);
+                }
+                )
+        );
+    }
+
+    record NbtFixerRule(Predicate<StructureBlockInfo> predicate,
+                               BiFunction<StructureBlockInfo, BlockPos, StructureBlockInfo> transformer) {
+        StructureBlockInfo apply(StructureBlockInfo info, BlockPos rel) {
             if (info != null && predicate.test(info)) {
                 return transformer.apply(info, rel);
             }

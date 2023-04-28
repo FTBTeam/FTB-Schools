@@ -9,7 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class FTBSchoolsArgumentTypes {
+public class ModArgumentTypes {
     public static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARG_TYPES
             = DeferredRegister.create(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, FTBSchools.MOD_ID);
 

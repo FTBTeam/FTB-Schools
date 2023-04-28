@@ -98,7 +98,7 @@ processResources {
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version,
                 "libraryversion": project.ftb_library_version,
-                "questsversion": project.ftb_library_version,
+                "questsversion": project.ftb_quests_version,
                 "kubejsversion": project.kubejs_version
     }
 }

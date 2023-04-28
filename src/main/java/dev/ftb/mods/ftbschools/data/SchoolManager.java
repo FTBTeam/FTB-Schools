@@ -4,7 +4,7 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.ftb.mods.ftbschools.FTBSchools;
-import dev.ftb.mods.ftbschools.register.FTBSchoolsBlocks;
+import dev.ftb.mods.ftbschools.register.ModBlocks;
 import dev.ftb.mods.ftbschools.block.SpawnMarkerBlock;
 import dev.ftb.mods.ftbschools.kubejs.FTBSchoolsEvents;
 import dev.ftb.mods.ftbschools.kubejs.LoadSchoolsEventJS;
@@ -53,8 +53,10 @@ public class SchoolManager extends DataHolder {
         List<Block> noPlace = ForgeRegistries.BLOCKS.tags().getTag(key).stream().toList();
 
         settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
-        settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(FTBSchoolsBlocks.SPAWN_MARKER.get())));
-        settings.addProcessor(new BlockIgnoreProcessor(noPlace));
+        settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(ModBlocks.SPAWN_MARKER.get())));
+        if (!noPlace.isEmpty()) {
+            settings.addProcessor(new BlockIgnoreProcessor(noPlace));
+        }
         settings.addProcessor(new NbtFixerProcessor());
 
         return settings;
@@ -64,7 +66,7 @@ public class SchoolManager extends DataHolder {
 
     public static SchoolManager INSTANCE;
 
-    public final MinecraftServer server;
+    private final MinecraftServer server;
     public Map<ResourceLocation, SchoolType> schoolTypes;
     public ServerLevel dayDim;
     public ServerLevel nightDim;
@@ -221,7 +223,7 @@ public class SchoolManager extends DataHolder {
         BlockPos spawnPos = null;
         Direction spawnFacing = Direction.NORTH;
 
-        for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), FTBSchoolsBlocks.SPAWN_MARKER.get())) {
+        for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), ModBlocks.SPAWN_MARKER.get())) {
             spawnPos = info.pos;
             spawnFacing = info.state.getValue(SpawnMarkerBlock.SPAWN_FACING);
             break;
