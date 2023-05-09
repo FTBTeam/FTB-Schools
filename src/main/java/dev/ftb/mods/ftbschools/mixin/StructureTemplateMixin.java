@@ -24,26 +24,26 @@ import java.util.List;
 
 @Mixin(StructureTemplate.class)
 public class StructureTemplateMixin {
-    @Inject(
-            method = "fillFromWorld",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;addToLists(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$StructureBlockInfo;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V", ordinal = 0, shift = At.Shift.AFTER),
-            locals = LocalCapture.CAPTURE_FAILHARD
-    )
-    public void savePos(Level level, BlockPos pos, Vec3i size, boolean withEntities, Block blockToIgnore, CallbackInfo ci,
-                        BlockPos l0, List l1, List l2, List l3, BlockPos l4, BlockPos l5, Iterator l6,
-                        BlockPos l7, BlockPos l8, BlockState l9, BlockEntity l10, StructureTemplate.StructureBlockInfo l11) {
-        if (l10 != null && !l2.isEmpty()) {
-            // Save a copy of the block entity's position (vanilla doesn't do this)
-            // Block info for the block entity will be the object just appended to blocksWithNBT
-            // (this data is needed by the NBTFixerProcessor)
-            CompoundTag schoolsSaved = new CompoundTag();
-            schoolsSaved.putInt("x", l10.getBlockPos().getX());
-            schoolsSaved.putInt("y", l10.getBlockPos().getY());
-            schoolsSaved.putInt("z", l10.getBlockPos().getZ());
-            @SuppressWarnings("unchecked") List<StructureTemplate.StructureBlockInfo> blocksWithNBT = l2;
-            blocksWithNBT.get(blocksWithNBT.size() - 1).nbt.put("ftbschools.saved", schoolsSaved);
-        }
-    }
+//    @Inject(
+//            method = "fillFromWorld",
+//            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;addToLists(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$StructureBlockInfo;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V", ordinal = 0, shift = At.Shift.AFTER),
+//            locals = LocalCapture.CAPTURE_FAILHARD
+//    )
+//    public void savePos(Level level, BlockPos pos, Vec3i size, boolean withEntities, Block blockToIgnore, CallbackInfo ci,
+//                        BlockPos l0, List l1, List l2, List l3, BlockPos l4, BlockPos l5, Iterator l6,
+//                        BlockPos l7, BlockPos l8, BlockState l9, BlockEntity l10, StructureTemplate.StructureBlockInfo l11) {
+//        if (l10 != null && !l2.isEmpty()) {
+//            // Save a copy of the block entity's position (vanilla doesn't do this)
+//            // Block info for the block entity will be the object just appended to blocksWithNBT
+//            // (this data is needed by the NBTFixerProcessor)
+//            CompoundTag schoolsSaved = new CompoundTag();
+//            schoolsSaved.putInt("x", l10.getBlockPos().getX());
+//            schoolsSaved.putInt("y", l10.getBlockPos().getY());
+//            schoolsSaved.putInt("z", l10.getBlockPos().getZ());
+//            @SuppressWarnings("unchecked") List<StructureTemplate.StructureBlockInfo> blocksWithNBT = l2;
+//            blocksWithNBT.get(blocksWithNBT.size() - 1).nbt.put("ftbschools.saved", schoolsSaved);
+//        }
+//    }
 
     @Inject(
             method = "placeInWorld(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings;Lnet/minecraft/util/RandomSource;I)Z",
