@@ -4,12 +4,12 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.ftb.mods.ftbschools.FTBSchools;
-import dev.ftb.mods.ftbschools.register.ModBlocks;
 import dev.ftb.mods.ftbschools.block.SpawnMarkerBlock;
 import dev.ftb.mods.ftbschools.kubejs.FTBSchoolsEvents;
 import dev.ftb.mods.ftbschools.kubejs.LoadSchoolsEventJS;
 import dev.ftb.mods.ftbschools.kubejs.SchoolEventJS;
-import dev.ftb.mods.ftbschools.structure.NbtFixerProcessor;
+import dev.ftb.mods.ftbschools.register.ModBlocks;
+import dev.ftb.mods.ftbschools.structure.StructureBlockReplacerProcessor;
 import dev.ftb.mods.ftbschools.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,12 +52,13 @@ public class SchoolManager extends DataHolder {
         TagKey<Block> key = TagKey.create(ForgeRegistries.BLOCKS.getRegistryKey(), FTBSchools.id("no_place"));
         List<Block> noPlace = ForgeRegistries.BLOCKS.tags().getTag(key).stream().toList();
 
+        // important that the structure-block-replace processor runs *before* BlockIgnoreProcessor.STRUCTURE_AND_AIR !
+        settings.addProcessor(StructureBlockReplacerProcessor.INSTANCE);
         settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
         settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(ModBlocks.SPAWN_MARKER.get())));
         if (!noPlace.isEmpty()) {
             settings.addProcessor(new BlockIgnoreProcessor(noPlace));
         }
-        settings.addProcessor(new NbtFixerProcessor());
 
         return settings;
     });
@@ -199,8 +200,6 @@ public class SchoolManager extends DataHolder {
             school.playerData = previousSchool.playerData;
             previousSchool.playerData = null;
             FTBSchoolsEvents.LEAVE_SCHOOL.post(id.getNamespace() + "." + id.getPath(), new SchoolEventJS.Leave(school, player, true));
-//            new SchoolEventJS.Leave(previousSchool, player, true)
-//                    .post(ScriptType.SERVER, FTBSchoolsEvents.LEAVE_SCHOOL, id.getNamespace() + "." + id.getPath());
         } else {
             player.saveWithoutId(school.playerData);
         }
@@ -245,8 +244,6 @@ public class SchoolManager extends DataHolder {
         player.setRespawnPosition(level.dimension(), origin.offset(spawnPos), yRot, true, false);
 
         FTBSchoolsEvents.ENTER_SCHOOL.post(id.getNamespace() + "." + id.getPath(), new SchoolEventJS.Enter(school, player));
-//        new SchoolEventJS.Enter(school, player)
-//                .post(ScriptType.SERVER, FTBSchoolsEvents.ENTER_SCHOOL, id.getNamespace() + "." + id.getPath());
 
         markDirty();
     }

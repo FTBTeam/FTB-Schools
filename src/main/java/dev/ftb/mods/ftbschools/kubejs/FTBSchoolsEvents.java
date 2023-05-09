@@ -10,4 +10,5 @@ public class FTBSchoolsEvents {
     public static final EventHandler LOAD_SCHOOLS = EVENT_GROUP.server("loadSchools", () -> LoadSchoolsEventJS.class);
     public static final EventHandler ENTER_SCHOOL = EVENT_GROUP.server("enterSchool", () -> SchoolEventJS.Enter.class).extra(Extra.STRING);
     public static final EventHandler LEAVE_SCHOOL = EVENT_GROUP.server("leaveSchool", () -> SchoolEventJS.Leave.class).extra(Extra.STRING);
+    public static final EventHandler REPLACE_BLOCK = EVENT_GROUP.server("replaceBlock", () -> ReplaceBlockEventJS.class);
 }
