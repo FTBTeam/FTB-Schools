@@ -14,10 +14,7 @@ import dev.ftb.mods.ftbschools.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +47,7 @@ public class SchoolManager extends DataHolder {
         StructurePlaceSettings settings = new StructurePlaceSettings();
 
         TagKey<Block> key = TagKey.create(ForgeRegistries.BLOCKS.getRegistryKey(), FTBSchools.id("no_place"));
-        List<Block> noPlace = ForgeRegistries.BLOCKS.tags().getTag(key).stream().toList();
+        @SuppressWarnings("DataFlowIssue") List<Block> noPlace = ForgeRegistries.BLOCKS.tags().getTag(key).stream().toList();
 
         // important that the structure-block-replace processor runs *before* BlockIgnoreProcessor.STRUCTURE_AND_AIR !
         settings.addProcessor(StructureBlockReplacerProcessor.INSTANCE);
@@ -180,7 +177,7 @@ public class SchoolManager extends DataHolder {
         return null;
     }
 
-    public void enterSchool(ServerPlayer player, SchoolType type) throws CommandSyntaxException {
+    public void enterSchool(ServerPlayer player, SchoolType type) {
         ResourceLocation id = type.id;
         StructureTemplate template = server.getStructureManager().get(id).orElse(null);
 
@@ -188,6 +185,8 @@ public class SchoolManager extends DataHolder {
             FTBSchools.LOGGER.error("School type has missing kubejs/data/" + id.getNamespace() + "/structures/" + id.getPath() + ".nbt!");
             return;
         }
+
+        markDirty();
 
         SchoolData previousSchool = currentSchool(player);
 
@@ -199,7 +198,7 @@ public class SchoolManager extends DataHolder {
         if (previousSchool != null) {
             school.playerData = previousSchool.playerData;
             previousSchool.playerData = null;
-            FTBSchoolsEvents.LEAVE_SCHOOL.post(id.getNamespace() + "." + id.getPath(), new SchoolEventJS.Leave(school, player, true));
+            FTBSchoolsEvents.LEAVE_SCHOOL.post(id.getNamespace() + "." + id.getPath(), new SchoolEventJS.Leave(previousSchool, player, true));
         } else {
             player.saveWithoutId(school.playerData);
         }
@@ -207,8 +206,6 @@ public class SchoolManager extends DataHolder {
         if (player.getRespawnPosition() == null) {
             school.playerData.putBoolean("noRespawnPoint", true);
         }
-
-        markDirty();
 
         player.getInventory().clearContent();
         player.removeAllEffects();
@@ -244,8 +241,6 @@ public class SchoolManager extends DataHolder {
         player.setRespawnPosition(level.dimension(), origin.offset(spawnPos), yRot, true, false);
 
         FTBSchoolsEvents.ENTER_SCHOOL.post(id.getNamespace() + "." + id.getPath(), new SchoolEventJS.Enter(school, player));
-
-        markDirty();
     }
 
     public void leaveSchool(ServerPlayer player, boolean droppedOut) throws CommandSyntaxException {
@@ -254,13 +249,15 @@ public class SchoolManager extends DataHolder {
             throw new SimpleCommandExceptionType(new LiteralMessage("You are not in a school!")).create();
         }
 
+        markDirty();
+
         CompoundTag tag = data.playerData;
         data.playerData = null;
 
         ResourceKey<Level> levelKey = Level.RESOURCE_KEY_CODEC.parse(NbtOps.INSTANCE, tag.get("Dimension")).result().orElse(Level.OVERWORLD);
-        ListTag pos = tag.getList("Pos", 6);
-        ListTag delta = tag.getList("Motion", 6);
-        ListTag rot = tag.getList("Rotation", 5);
+        ListTag pos = tag.getList("Pos", Tag.TAG_DOUBLE);
+        ListTag delta = tag.getList("Motion", Tag.TAG_DOUBLE);
+        ListTag rot = tag.getList("Rotation", Tag.TAG_FLOAT);
 
         int gameMode = tag.getInt("playerGameType");
 
@@ -271,15 +268,18 @@ public class SchoolManager extends DataHolder {
         }
         tag.remove("noRespawnPoint");
 
-        player.teleportTo(server.getLevel(levelKey), pos.getDouble(0), pos.getDouble(1), pos.getDouble(2), rot.getFloat(0), rot.getFloat(1));
+        ServerLevel level = server.getLevel(levelKey);
+        if (level != null) {
+            player.teleportTo(level, pos.getDouble(0), pos.getDouble(1), pos.getDouble(2), rot.getFloat(0), rot.getFloat(1));
+        } else {
+            ServerLevel overworld = Objects.requireNonNull(server.getLevel(Level.OVERWORLD));
+            BlockPos pos1 = overworld.getSharedSpawnPos();
+            player.teleportTo(overworld, pos1.getX(), pos1.getY(), pos1.getZ(), overworld.getSharedSpawnAngle(), 0f);
+        }
         player.setDeltaMovement(delta.getDouble(0), delta.getDouble(1), delta.getDouble(2));
         player.setGameMode(GameType.byId(gameMode, GameType.SURVIVAL));
 
         ResourceLocation id = data.type.id;
-
         FTBSchoolsEvents.LEAVE_SCHOOL.post(id.getNamespace() + "." + id.getPath(), new SchoolEventJS.Leave(data, player, droppedOut));
-//        new SchoolEventJS.Leave(data, player, droppedOut)
-//                .post(ScriptType.SERVER, FTBSchoolsEvents.LEAVE_SCHOOL, id.getNamespace() + "." + id.getPath());
-
     }
 }
