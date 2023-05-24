@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbschools.register;
 import dev.ftb.mods.ftbschools.FTBSchools;
 import dev.ftb.mods.ftbschools.block.SchoolBarrierBlock;
 import dev.ftb.mods.ftbschools.block.SpawnMarkerBlock;
+import dev.ftb.mods.ftbschools.block.VanishingRedstoneBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -20,6 +21,7 @@ public class ModBlocks {
 
     public static final RegistryObject<SpawnMarkerBlock> SPAWN_MARKER = simpleBlock("spawn_marker", SpawnMarkerBlock::new);
     public static final RegistryObject<SchoolBarrierBlock> BARRIER = simpleBlock("barrier", SchoolBarrierBlock::new);
+    public static final RegistryObject<VanishingRedstoneBlock> VANISHING_REDSTONE_BLOCK = simpleBlock("vanishing_redstone_block", VanishingRedstoneBlock::new);
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block, Function<RegistryObject<T>, Supplier<? extends Item>> item) {
         RegistryObject<T> register = BLOCKS.register(name, block);

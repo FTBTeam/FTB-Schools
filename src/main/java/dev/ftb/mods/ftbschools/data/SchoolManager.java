@@ -43,24 +43,22 @@ public class SchoolManager extends DataHolder {
     public static final ResourceKey<Level> DAY_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, FTBSchools.id("school_day"));
     public static final ResourceKey<Level> NIGHT_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, FTBSchools.id("school_night"));
 
-    private static final Lazy<StructurePlaceSettings> settings = Lazy.of(() -> {
+    private static final Lazy<StructurePlaceSettings> STRUCTURE_PLACE_SETTINGS = Lazy.of(() -> {
         StructurePlaceSettings settings = new StructurePlaceSettings();
 
+        List<Block> toRemove = new ArrayList<>(List.of(ModBlocks.SPAWN_MARKER.get(), ModBlocks.VANISHING_REDSTONE_BLOCK.get()));
         TagKey<Block> key = TagKey.create(ForgeRegistries.BLOCKS.getRegistryKey(), FTBSchools.id("no_place"));
-        @SuppressWarnings("DataFlowIssue") List<Block> noPlace = ForgeRegistries.BLOCKS.tags().getTag(key).stream().toList();
+        toRemove.addAll(Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(key).stream().toList());
 
-        // important that the structure-block-replace processor runs *before* BlockIgnoreProcessor.STRUCTURE_AND_AIR !
+        // important that StructureBlockReplacerProcessor runs *before* BlockIgnoreProcessor.STRUCTURE_AND_AIR !
         settings.addProcessor(StructureBlockReplacerProcessor.INSTANCE);
         settings.addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR);
-        settings.addProcessor(new BlockIgnoreProcessor(Collections.singletonList(ModBlocks.SPAWN_MARKER.get())));
-        if (!noPlace.isEmpty()) {
-            settings.addProcessor(new BlockIgnoreProcessor(noPlace));
-        }
+        settings.addProcessor(new BlockIgnoreProcessor(toRemove));
 
         return settings;
     });
 
-    public static final LevelResource FTBSCHOOLS_DATA = new LevelResource("ftbschools");
+    public static final LevelResource FTBSCHOOLS_DATA = new LevelResource(FTBSchools.MOD_ID);
 
     public static SchoolManager INSTANCE;
 
@@ -235,7 +233,7 @@ public class SchoolManager extends DataHolder {
 
         ServerLevel level = type.getDimension();
 
-        template.placeInWorld(level, origin, origin, settings.get(), level.random, Block.UPDATE_CLIENTS);
+        template.placeInWorld(level, origin, origin, STRUCTURE_PLACE_SETTINGS.get(), level.random, Block.UPDATE_CLIENTS);
         player.displayClientMessage(Component.literal("Successfully generated new school " + id + "/#" + school.index + " @ " + spawnPosD), false);
         player.teleportTo(level, spawnPosD.x, spawnPosD.y, spawnPosD.z, yRot, 0F);
         player.setRespawnPosition(level.dimension(), origin.offset(spawnPos), yRot, true, false);
