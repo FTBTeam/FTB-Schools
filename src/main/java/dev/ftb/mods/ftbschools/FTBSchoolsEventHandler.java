@@ -29,8 +29,10 @@ public class FTBSchoolsEventHandler {
 
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
-        SchoolManager.INSTANCE.saveAll();
-        SchoolManager.INSTANCE = null;
+        if (SchoolManager.INSTANCE != null) {
+            SchoolManager.INSTANCE.saveAll();
+            SchoolManager.INSTANCE = null;
+        }
     }
 
     @SubscribeEvent
