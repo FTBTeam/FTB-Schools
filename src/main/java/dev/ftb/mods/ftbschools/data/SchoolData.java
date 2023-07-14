@@ -17,6 +17,7 @@ public class SchoolData {
     public UUID owner;
     public SchoolType type;
     public CompoundTag playerData;
+    public final CommandBlacklist commandBlacklist = new CommandBlacklist();
 
     public SchoolData(SchoolManager sd, int i) {
         manager = sd;
@@ -28,6 +29,7 @@ public class SchoolData {
         owner = tag.getUUID("Owner");
         type = manager.schoolTypes.get(new ResourceLocation(tag.getString("Type")));
         playerData = tag.contains("PlayerData") ? tag.getCompound("PlayerData") : null;
+        commandBlacklist.readNBT(tag);
     }
 
     public CompoundTag write() {
@@ -38,6 +40,8 @@ public class SchoolData {
         if (playerData != null) {
             tag.put("PlayerData", playerData);
         }
+
+        commandBlacklist.writeNBT(tag);
 
         return tag;
     }
@@ -57,4 +61,5 @@ public class SchoolData {
     public BlockPos getLocation() {
         return new BlockPos(((index % SCHOOLS_PER_LINE) << 9) + 256, 69, ((index / SCHOOLS_PER_LINE) << 9) + 256);
     }
+
 }

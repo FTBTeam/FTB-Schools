@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbschools.kubejs;
 
+import dev.ftb.mods.ftbschools.data.SchoolManager;
 import dev.ftb.mods.ftbschools.data.SchoolTypeProperties;
 import dev.latvian.mods.kubejs.event.EventJS;
 import net.minecraft.resources.ResourceLocation;
@@ -18,5 +19,9 @@ public class LoadSchoolsEventJS extends EventJS {
         SchoolTypeProperties properties = new SchoolTypeProperties();
         p.accept(properties);
         schools.accept(id, properties);
+    }
+
+    public void disableCommand(String command) {
+        SchoolManager.INSTANCE.commandBlacklist.addDisabledCommand(command);
     }
 }

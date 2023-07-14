@@ -71,6 +71,8 @@ public class SchoolManager extends DataHolder {
     private final List<SchoolData> daySchools;
     private final List<SchoolData> nightSchools;
 
+    public final CommandBlacklist commandBlacklist = new CommandBlacklist();
+
     public SchoolManager(MinecraftServer server) {
         this.server = server;
         this.schoolTypes = new HashMap<>();

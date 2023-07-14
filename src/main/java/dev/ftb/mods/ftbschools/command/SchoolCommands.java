@@ -1,9 +1,9 @@
 package dev.ftb.mods.ftbschools.command;
 
-import dev.ftb.mods.ftbschools.data.SchoolManager;
-import dev.ftb.mods.ftbschools.data.SchoolType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.ftb.mods.ftbschools.data.SchoolManager;
+import dev.ftb.mods.ftbschools.data.SchoolType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;

@@ -24,7 +24,9 @@ import java.util.function.Supplier;
 
 public class SchoolArgumentType implements ArgumentType<SchoolType> {
     private static final DynamicCommandExceptionType INVALID_TYPE
-            = new DynamicCommandExceptionType((arg) -> Component.translatable("command.school.notFound", arg));
+            = new DynamicCommandExceptionType(arg -> Component.translatable("command.school.notFound", arg));
+    public static final DynamicCommandExceptionType COMMAND_DISABLED
+            = new DynamicCommandExceptionType(arg -> Component.translatable("command.school.commandDisabled", arg));
 
     private final Supplier<Map<ResourceLocation, SchoolType>> schoolTypes;
 

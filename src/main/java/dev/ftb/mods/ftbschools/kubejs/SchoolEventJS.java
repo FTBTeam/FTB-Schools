@@ -41,6 +41,10 @@ public abstract class SchoolEventJS extends PlayerEventJS {
         public Enter(SchoolData school, ServerPlayer player) {
             super(school, player);
         }
+
+        public void disableCommand(String command) {
+            school.commandBlacklist.addDisabledCommand(command);
+        }
     }
 
     public static class Leave extends SchoolEventJS {
