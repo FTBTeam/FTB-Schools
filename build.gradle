@@ -50,13 +50,24 @@ repositories {
     }
 
     maven {
-        url "https://maven.saps.dev/minecraft"
+        url "https://maven.saps.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.ftb.mods"
+        }
     }
 
     maven {
         url "https://www.cursemaven.com"
         content {
             includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name 'Curios'
+        url "https://maven.theillusivec4.top/"
+        content {
+            includeGroup "top.theillusivec4.curios"
         }
     }
 }
@@ -69,6 +80,9 @@ dependencies {
     modImplementation("dev.ftb.mods:ftb-library-forge:${ftb_library_version}") { transitive false }
     modImplementation("dev.ftb.mods:ftb-quests-forge:${ftb_quests_version}")
     modImplementation "dev.latvian.mods:kubejs-forge:${rootProject.kubejs_version}"
+
+    modCompileOnlyApi("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    modRuntimeOnly("top.theillusivec4.curios:curios-forge:${curios_version}")
 
 //    modCompile("curse.maven:kubejs-238086:3189113")
 //    modCompile("curse.maven:rhino-416294:3187177")

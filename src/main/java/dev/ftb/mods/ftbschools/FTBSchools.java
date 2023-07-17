@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbschools.register.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +18,8 @@ public class FTBSchools {
 
     public static FTBSchoolsProxy PROXY;
 
+    public static boolean curiosAvailable;
+
     public FTBSchools() {
         PROXY = DistExecutor.safeRunForDist(() -> FTBSchoolsProxy.Client::new, () -> FTBSchoolsProxy.Common::new);
 
@@ -27,6 +30,8 @@ public class FTBSchools {
         ModChunkGenerators.CHUNK_GEN.register(modBus);
         ModArgumentTypes.ARG_TYPES.register(modBus);
         ModStructureProcessors.PROCESSORS.register(modBus);
+
+        curiosAvailable = ModList.get().isLoaded("curios");
     }
 
     public static ResourceLocation id(String path) {

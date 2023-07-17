@@ -5,9 +5,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.ftb.mods.ftbschools.FTBSchools;
 import dev.ftb.mods.ftbschools.block.SpawnMarkerBlock;
-import dev.ftb.mods.ftbschools.kubejs.FTBSchoolsEvents;
-import dev.ftb.mods.ftbschools.kubejs.LoadSchoolsEventJS;
-import dev.ftb.mods.ftbschools.kubejs.SchoolEventJS;
+import dev.ftb.mods.ftbschools.integration.curios.CuriosHelper;
+import dev.ftb.mods.ftbschools.integration.kubejs.FTBSchoolsEvents;
+import dev.ftb.mods.ftbschools.integration.kubejs.LoadSchoolsEventJS;
+import dev.ftb.mods.ftbschools.integration.kubejs.SchoolEventJS;
 import dev.ftb.mods.ftbschools.register.ModBlocks;
 import dev.ftb.mods.ftbschools.structure.StructureBlockReplacerProcessor;
 import dev.ftb.mods.ftbschools.util.Util;
@@ -212,7 +213,9 @@ public class SchoolManager extends DataHolder {
         player.giveExperienceLevels(Integer.MIN_VALUE);
         player.clearFire();
         player.setHealth(player.getMaxHealth());
-        // TODO: Curios integration to clear any equipped curios
+        if (FTBSchools.curiosAvailable) {
+            CuriosHelper.clearCurios(player);
+        }
 
         BlockPos origin = school.getLocation();
 

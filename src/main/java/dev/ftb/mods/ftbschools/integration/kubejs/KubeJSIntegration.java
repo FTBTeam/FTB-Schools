@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbschools.kubejs;
+package dev.ftb.mods.ftbschools.integration.kubejs;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 

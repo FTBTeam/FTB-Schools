@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbschools.kubejs;
+package dev.ftb.mods.ftbschools.integration.kubejs;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.ftb.mods.ftbschools.FTBSchools;

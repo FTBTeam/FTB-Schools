@@ -1,8 +1,8 @@
 package dev.ftb.mods.ftbschools.structure;
 
 import com.mojang.serialization.Codec;
-import dev.ftb.mods.ftbschools.kubejs.FTBSchoolsEvents;
-import dev.ftb.mods.ftbschools.kubejs.ReplaceBlockEventJS;
+import dev.ftb.mods.ftbschools.integration.kubejs.FTBSchoolsEvents;
+import dev.ftb.mods.ftbschools.integration.kubejs.ReplaceBlockEventJS;
 import dev.ftb.mods.ftbschools.register.ModStructureProcessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
