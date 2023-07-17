@@ -1,14 +1,20 @@
 package dev.ftb.mods.ftbschools;
 
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.ftb.mods.ftbschools.command.SchoolArgumentType;
 import dev.ftb.mods.ftbschools.command.SchoolCommands;
 import dev.ftb.mods.ftbschools.data.SchoolData;
 import dev.ftb.mods.ftbschools.data.SchoolManager;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -16,8 +22,12 @@ import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.UUID;
+
 @Mod.EventBusSubscriber(modid = FTBSchools.MOD_ID)
 public class FTBSchoolsEventHandler {
+    private static final Object2LongOpenHashMap<UUID> pendingDropouts = new Object2LongOpenHashMap<>();
+
     @SubscribeEvent
     public static void serverAboutToStart(ServerAboutToStartEvent event) {
         SchoolManager.INSTANCE = new SchoolManager(event.getServer());
@@ -56,6 +66,35 @@ public class FTBSchoolsEventHandler {
             if (schoolData != null && (SchoolManager.INSTANCE.commandBlacklist.isCommandDisabled(cmd) || schoolData.commandBlacklist.isCommandDisabled(cmd))) {
                 event.setException(SchoolArgumentType.COMMAND_DISABLED.create(cmd));
                 event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDeath(PlayerEvent.Clone event) {
+        if (event.isWasDeath() && event.getOriginal() instanceof ServerPlayer serverPlayer) {
+            SchoolData data = SchoolManager.INSTANCE.currentSchool(serverPlayer);
+            if (data != null) {
+                // defer this a tick; leaving school causes a player teleport, and teleporting the
+                // player during a clone event is likely to lead to problems
+                pendingDropouts.put(serverPlayer.getUUID(), serverPlayer.getServer().getTickCount() + 1L);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.player instanceof ServerPlayer serverPlayer && pendingDropouts.containsKey(event.player.getUUID())) {
+            long when = pendingDropouts.getLong(serverPlayer.getUUID());
+            if (when <= serverPlayer.getServer().getTickCount()) {
+                try {
+                    SchoolManager.INSTANCE.leaveSchool(serverPlayer, true);
+                    pendingDropouts.removeLong(serverPlayer.getUUID());
+                    serverPlayer.displayClientMessage(Component.translatable("ftbschools.message.leftDueToDeath",
+                            serverPlayer.getGameProfile().getName()).withStyle(ChatFormatting.GOLD), false);
+                } catch (CommandSyntaxException e) {
+                    FTBSchools.LOGGER.error("Unexpected error trying to remove {} from school: {}", serverPlayer.getUUID(), e.getMessage());
+                }
             }
         }
     }

@@ -4,5 +4,6 @@
     "block.ftbschools.vanishing_redstone_block": "§8Vanishing§r Redstone Block",
     "command.school.notFound": "School %s does not exist!",
     "command.school.commandDisabled": "The /%s command is disabled in this school!",
+    "ftbschools.message.leftDueToDeath": "Player %s left school due to death",
     "biome.ftbschools.school_biome": "School Biome"
 }
