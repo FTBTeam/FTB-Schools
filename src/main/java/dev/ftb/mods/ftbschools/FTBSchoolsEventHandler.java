@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -60,24 +60,29 @@ public class FTBSchoolsEventHandler {
     public static void onCommand(CommandEvent event) {
         CommandContextBuilder<CommandSourceStack> context = event.getParseResults().getContext();
         ServerPlayer player = context.getSource().getPlayer();
-        if (player != null && !player.hasPermissions(2)) {
+        if (player != null) {
             String cmd = context.getNodes().get(0).getNode().getName();
             SchoolData schoolData = SchoolManager.INSTANCE.currentSchool(player);
             if (schoolData != null && (SchoolManager.INSTANCE.commandBlacklist.isCommandDisabled(cmd) || schoolData.commandBlacklist.isCommandDisabled(cmd))) {
-                event.setException(SchoolArgumentType.COMMAND_DISABLED.create(cmd));
-                event.setCanceled(true);
+                if (!player.hasPermissions(2)) {
+                    event.setException(SchoolArgumentType.COMMAND_DISABLED.create(cmd));
+                    event.setCanceled(true);
+                } else {
+                    player.displayClientMessage(Component.translatable("ftbschools.message.commandExempt").withStyle(ChatFormatting.GOLD), true);
+                }
             }
         }
     }
 
     @SubscribeEvent
-    public static void onPlayerDeath(PlayerEvent.Clone event) {
-        if (event.isWasDeath() && event.getOriginal() instanceof ServerPlayer serverPlayer) {
+    public static void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             SchoolData data = SchoolManager.INSTANCE.currentSchool(serverPlayer);
             if (data != null) {
                 // defer this a tick; leaving school causes a player teleport, and teleporting the
-                // player during a clone event is likely to lead to problems
+                // player during a death event is likely to lead to problems
                 pendingDropouts.put(serverPlayer.getUUID(), serverPlayer.getServer().getTickCount() + 1L);
+                event.setCanceled(true);
             }
         }
     }
