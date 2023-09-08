@@ -60,7 +60,7 @@ public class FTBSchoolsEventHandler {
     public static void onCommand(CommandEvent event) {
         CommandContextBuilder<CommandSourceStack> context = event.getParseResults().getContext();
         ServerPlayer player = context.getSource().getPlayer();
-        if (player != null) {
+        if (player != null && !context.getNodes().isEmpty()) {
             String cmd = context.getNodes().get(0).getNode().getName();
             SchoolData schoolData = SchoolManager.INSTANCE.currentSchool(player);
             if (schoolData != null && (SchoolManager.INSTANCE.commandBlacklist.isCommandDisabled(cmd) || schoolData.commandBlacklist.isCommandDisabled(cmd))) {
